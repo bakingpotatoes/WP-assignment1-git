@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./AboutUs.css">
+</head>
+<body>
+    <div class="side-nav" id="side-nav">
+        <nav>
+            <div>
+                <!--Put this in a div so you can resize the container itself anytime-->
+                <img id="home-image-button" src="../images/Untitled.png" alt="Home">
+            </div>
+            <div>
+                <img id="contact-image-button" src="../images/Untitled.png" alt="Contact">
+            </div>
+            <div>
+                <img id="aboutus-image-button" src="../images/Untitled.png" alt="AboutUs">
+            </div>
+             <div>
+                <img id="shop-image-button" src="../images/Untitled.png" alt="Shop">
+            </div>
+        </nav>
+    </div>
+    <div class="context-menu" id="context">
+        <article>f</article>
+
+    </div>
+    <div class="main-body">
+        <header>
+            <article class="title">
+                Meet the Team
+            </article>
+            <div class="description">
+                visit our founder, co-founders' profiles, we talk alot about ourselves :D
+            </div>
+        </header>
+        <div class="profile-gallery">
+            <div id="founder">
+                <img src="../images/Untitled.png" alt="">
+                <section>
+                    <h1>Hilbert Kurt</h1>
+                    <p><b>Co-Founder</b></p>
+                    <p><i>Web Designer</i></p>
+                    <div class="view-profile" onclick="window.location.href='./founder.html';">View Profile</div>
+                </section>
+            </div>
+            <div id="co-founder">
+                <img src="../images/Untitled.png" alt="">
+                <section>
+                    <h1>Hilbert Kurt</h1>
+                    <p><b>Co-Founder</b></p>
+                    <p><i>Web Designer</i></p>
+                    <div class="view-profile" onclick="window.location.href='./cofounder.html';">View Profile</div>
+                </section>
+            </div>
+        </div>
+        <div class="user-profile">
+            <img id="user-profile-icon" src="../images/istockphoto-1300845620-612x612.jpg" alt="">
+        </div>
+    </div>
+    <script type="text/javascript">
+        let navCont = document.getElementById("side-nav");
+        let contextCont = document.getElementById("context");
+        let userProfileButton = document.querySelector("#user-profile-icon")
+        let maxWidth = navCont.offsetWidth;
+        let minWidth = maxWidth - contextCont.offsetWidth;
+
+
+        let animTimeAxis = minWidth; //most right digit is ALWAYS the miliseconds in hundrenths, other digits are seconds, when theres only 1 digit, its 0 seconds + N hundred miliseconds
+        let timer
+        const context = document.querySelector("#context");
+        const elementObjects = { //THIS STORES MY OBJECTS THAT CAN BE INTERACTED WITH ^^ im so happy yay
+            //contains objectid, directTo when clicked, (for context menu only: a title, and a context text)
+            "home-image-button" : [document.getElementById("home-image-button"), "../index/index.html", createContextContent("<b>Go home</b> <br> View our homepage again!")],
+            "contact-image-button" : [document.getElementById("contact-image-button"), "../contact/contact.html", createContextContent("<b>Contact Us!</b> <br> Apply for a form or get our contact information")],
+            "aboutus-image-button" : [document.getElementById("aboutus-image-button"), "../aboutus/aboutus.html", createContextContent("<b>About Us</b> <br> Learn more about us as people; our hobbies and timeline!")],
+            "shop-image-button" : [document.getElementById("shop-image-button"), "../shop/shop.html", createContextContent("<b>Shop</b> <br> Take a look around our small shoplet!")]
+        }
+        // FOR ANIMATIONS, USE A SINE FUNCTION AS TIME JUXAPOSED TO RATE OF CHANGE
+
+        function clamp(value, min, max) {
+            if (min != null && value < min) {       //NOTE: make it so that it can accept two arguments at once and works as intended// 
+                return min;
+            }
+            if (max != null && value > max) {
+                return max;
+            }
+            return value;
+        }
+
+        function createContextContent(title, description) {
+            let contextMenuContent = {
+                "label" : title 
+            }
+            return contextMenuContent;
+        }
+
+        function moveContext(event) {
+            let ID = event.currentTarget.id;
+            let navIcon = document.getElementById(ID)
+            let translateSpeed = 12;
+            if (event.type === "mouseenter") {
+                let targetRect = document.getElementById(ID);
+                let rectClientDimension = targetRect.getBoundingClientRect();
+                let contextContent = document.querySelector("#context > article")
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis + translateSpeed), min=minWidth, max=(maxWidth))}, 10); //stored in a variable so we can stop the timer later
+                contextContent.innerHTML = String(elementObjects[ID][2]["label"]);
+                contextContent.style.top = String(rectClientDimension.top.toFixed() + "px");
+                //as long as mouse is on element, increment timer, pass it through a function that determines the y position (the viewport position) based on a sine function
+            } else if (event.type === "mouseout") {
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis - translateSpeed), min=minWidth, max=(maxWidth))}, 10);
+            } else if (event.type === "click") {
+                clearInterval(timer);
+                location.replace(elementObjects[String(ID)][1]);
+            }
+                
+        }
+        for (const element in elementObjects) { //(any declarations;, condition for the loop to keep going;, alter anything to make sure the loop may end;) OR (const blockVar in Matrix)
+            let EL = elementObjects[element][0];
+            EL.addEventListener("click", moveContext); //APPARENTLY, CALLING A FUNCTION LIKE THIS IS JUST "REFERENCING IT", DON'T DO moveContext(event) OR YOU WOULD BE CALLING IT WITHOUT PARAMETERS IMMEDIATELY APPARENTLY ToT
+            EL.addEventListener("mouseenter", moveContext); //Ig this is a "addEventListener constructor", the first argument to be passed in is ALWAYS the event object ToT wtffff is this shitt
+            EL.addEventListener("mouseout", moveContext); //i want to kill the people who made js
+
+        }
+
+        setInterval(() => { //this will be my defacto update cycle asynch function
+
+            // context.innerText = elementObjects[String(currContext)][2];
+            context.style.left = String(animTimeAxis + "px");
+            
+        }, 10);
+
+
+
+    </script>
+</body>
+</html>
