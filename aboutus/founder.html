@@ -42,25 +42,25 @@
             </div>
         </header>
         <div class="profile-banner" id="profile-banner">
-            <section>
+            <section id="profile-frame">
                 <img id="profile-picture" class="profile-picture" src="../images/istockphoto-1300845620-612x612.jpg" alt="">
                 <h1>Keith Chan</h1>
                 <p style="color: rgba(0, 0, 0, 0.463);"><i>Founder</i></p>
                 <div class="socials-container" id="socials-container">
-                    <div id="instagram"><img style="filter: invert(1);" src="../images/instagram-icon.jpg" alt="" onclick="window.replace()"></div>
-                    <div id="linkedin"><img style="filter: invert(1);" src="../images/linkedin-icon.png" alt="" onclick="window.replace()"></div>
-                    <div id="twitter"><img style="background-image: none; background-color: transparent;" src="../images/twitter-icon.png" alt="" onclick="window.replace()"></div>
+                    <div id="instagram" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(1);" src="../images/instagram-icon.jpg" alt="" onclick="window.replace()"></div>
+                    <div id="linkedin" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(1);" src="../images/linkedin-icon.png" alt="" onclick="window.replace()"></div>
+                    <div id="twitter" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(0); background-image: none; background-color: transparent;" src="../images/twitter-icon.png" alt="" onclick="window.replace()"></div>
                 </div>
 
             </section>
-            <article>
-                <section>
+            <article id="profile-info-box">
+                <section id="introduction-box">
                     My Introduction
                 </section>
-                <section>
+                <section id="timeline-box">
                     My Timeline
                 </section>
-                <section>
+                <section id="interests-box">
                     Personal Interests
                 </section>
             </article>
@@ -79,6 +79,16 @@
         let userProfileButton = document.querySelector("#user-profile-icon")
         let maxWidth = navCont.offsetWidth;
         let minWidth = maxWidth - contextCont.offsetWidth;
+
+        // let objectChecker = {
+        //     "socials-container" : () => {
+        //         let social
+        //         if () {
+
+        //         }
+        //     },
+
+        // }
 
         let profileBanner = document.getElementById("profile-banner")
         let profilePicture = document.querySelector("#profile-banner > section")
@@ -115,7 +125,7 @@
         function moveContext(event) {
             let ID = event.currentTarget.id;
             let navIcon = document.getElementById(ID)
-            let translateSpeed = 12;
+            let translateSpeed = 100;
             if (event.type === "mouseenter") {
                 let targetRect = document.getElementById(ID);
                 let rectClientDimension = targetRect.getBoundingClientRect();
@@ -142,7 +152,9 @@
 
         }
 
-        function toggleSocials(setMode) {
+
+
+        function toggleSocials(setMode) { //this function makes it so that when you scroll down, the social media buttons transition into frame, takes external conditions besides a mode parameter
             let socialsContainer = document.querySelector("#socials-container").childNodes;
             for (let i = 0; i < socialsContainer.length; i++) {
                 if (socialsContainer[i].id != undefined) {
@@ -155,6 +167,73 @@
                     }
                 }
             }
+        }
+
+
+        function initialiseContentBoxes() { //this for now just changes the opacity of the content boxes when they arrive into viewing range
+            // fire initialisation when this box is at a certain distance from the top, and provided that the socials-container has already initialised
+            let profileInformationContainer = document.querySelector("#profile-info-box").childNodes;
+            for (let i = 0; i < profileInformationContainer.length; i++) {
+                if (profileInformationContainer[i].id != undefined) {
+                    
+                    let childID = profileInformationContainer[i].id;
+                    let topDist = parseInt(document.getElementById(childID).getBoundingClientRect().top.toFixed());
+                    if (topDist <= 600) {
+                        document.getElementById(childID).style.animationName = "reverse-contentBoxCompleteFade";
+                    } else if (topDist >= 600) {
+                        document.getElementById(childID).style.animationName = "contentBoxCompleteFade";
+                    }
+                }
+            }
+        }
+
+        function socialStyles(event) { //this function makes it so that the social icons change background color and filter when hovered over
+            let ID = event.currentTarget.id;
+            let targetSocial = document.getElementById(ID);
+            let targetImg = document.querySelector(`#${ID} > img`);
+            
+            if (event.target.id === ID) {
+                let currInvertVAL;
+                let invertVAL;
+                let invertOBJ = getComputedStyle(targetImg).filter;
+                for (let i = 0; i < String(invertOBJ).length; i++) {
+                    if (isFinite(parseFloat(invertOBJ[i]))) {
+                        invertVAL = invertOBJ[i];
+                        if (invertVAL == 0) {
+                            currInvertVAL = 1;
+                        } else {
+                            currInvertVAL = 0;
+                        }
+                        targetImg.style.filter = `invert(${currInvertVAL})`;
+                    }
+                }
+                if (event.type == "mouseover") {
+                    targetSocial.animate(
+                        [
+                            {backgroundColor : "rgba(255,255,255,1)"},
+                            {backgroundColor: "rgba(0,0,0,0.7)"}
+                        ], {
+                            duration: 500,
+                            iterations: 1,
+                            fill: "both"
+                        }
+                    );
+                } else {
+                    targetSocial.animate(
+                        [
+                            {backgroundColor : "rgba(0,0,0,0.7)"},
+                            {backgroundColor: "rgba(255,255,255,1)"}
+                        ], {
+                            duration: 500,
+                            iterations: 1,
+                            fill: "both"
+                        }
+                    );
+                }
+            };
+            
+
+
         }
 
         
@@ -172,12 +251,11 @@
             //         allElements[i].style.userSelect = "all";
             //     }
             // }
-
-            if (profileBanner.getBoundingClientRect().top.toFixed() <= 150) {
+            if (profileBanner.getBoundingClientRect().top.toFixed() <= 400) {
                 photoViewer.style.animationName = "completeFade";
                 photoViewer.disabled = true;
                 toggleSocials(true);
-            } else if (profileBanner.getBoundingClientRect().top.toFixed() >= 150) {
+            } else if (profileBanner.getBoundingClientRect().top.toFixed() >= 400) {
                 photoViewer.style.animationName = "reverse-completeFade";
                 photoViewer.disabled = false;
                 toggleSocials(false);
@@ -191,6 +269,7 @@
         setInterval(() => { //this will be my defacto update cycle asynch function
             const allElements = document.querySelectorAll('*');
             context.style.left = String(animTimeAxis + "px");
+            initialiseContentBoxes();
         }, 10);
 
 
