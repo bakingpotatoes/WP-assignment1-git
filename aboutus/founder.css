@@ -1,6 +1,7 @@
 body {
     margin: 0%;
     font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
 }
 
 :root {
@@ -63,6 +64,7 @@ div.side-nav {
     justify-self: center;
     justify-content: center;
     z-index: 0;
+    
     /*  */
     & > header {
         position: fixed;
@@ -112,14 +114,124 @@ div.side-nav {
             row-gap: 100px;
 
             & section {
-                background-color: aliceblue;
+                --fontSize: 30px;
+
+                background-color: rgb(255, 255, 255);
+                border-left: 10px solid black;
+                border-top: 2px solid black;
                 width: 80%;
-                height: 300px;
-                box-shadow: 0px 4px 5px 0px rgba(0,0,0, 0.7);
+                max-width: 80%;
+                min-height: 300px;
+                height: auto;
+                /* box-shadow: 0px 4px 5px 0px rgba(0,0,0, 0.7); */
                 text-align: center;
                 animation-duration: 600ms;
                 animation-fill-mode: both;
+                align-content: start;
+                justify-content: center;
                 opacity: 1;
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0 20px 20px 20px;
+
+                &  h1 {
+                    font-size: var(--fontSize);
+                    text-align: left;
+                    height: min-content;
+                    width: 100%;
+                    margin-top: normal;
+                    margin-bottom: 10px;
+                }
+
+                & > div.intro-grid {
+                    min-width: 95%;
+                    max-width: 95%;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+
+                    & article {
+                        text-align: left;
+                        word-break: break-all;
+                    }
+
+                }
+
+                & > div.timeline-grid {
+                    min-width: 95%;
+                    max-width: 95%;
+                    display: grid;
+                    grid-template-columns: 1fr 5fr;
+
+                    & > article {
+                        height: fit-content;
+                        align-items: center;
+                        justify-content: center;
+
+                        & > div {
+                            width: 80%;
+                            min-height: 600px;
+                            max-height: 600px;
+                            white-space: wrap;
+                            word-break: break-all;
+                            align-content: start;
+                            overflow-y: scroll;
+                            padding: 15px;
+
+                            &::-webkit-scrollbar {
+                                display: none;
+                            }
+
+                            & > p {
+                                text-align: left;
+                                margin-left: 20px;
+                            }
+
+                        }
+
+                        & > svg {
+                            width: auto;
+                            height: fit-content;
+                            --animationDuration: 500ms;
+
+                            & circle {
+                                cx: 49.5; 
+                                cy: 74.5;
+                                r: 25.5;
+                                fill: url(#mouseout);
+                                animation-duration: var(--animationDuration);
+                                animation-fill-mode: both;
+                                opacity: 0.7;
+
+                            }
+
+                            & .tail {
+                                d: path("M50 37.5V10");
+                                stroke-width: 20;
+                                stroke-linecap: round;
+                                stroke: #ffe8da;
+                                animation-duration: var(--animationDuration);
+                                animation-fill-mode: both;
+                            }
+
+                            & rect.hitbox {
+                                x: 0;
+                                y: 50;
+                                width: 100px;
+                                height: 51px; 
+                                fill: transparent;
+                                cursor: pointer;
+                            }
+
+
+                        }
+
+                    }
+                }
+
+                & p {
+                    font-size: calc(var(--fontSize) / 1.5);
+                }
             }
             
         }
@@ -142,27 +254,37 @@ div.side-nav {
                 margin-top: 15px;
                 
                 & > div {
-                    width: 50px;
-                    height: 50px;
-                    padding: 10px;
+                    width: 65px;
+                    height: 65px;
+                    padding: 5px;
                     text-align: center;
                     border-radius: 30px;
                     border: 1px solid rgba(0, 0, 0, 0.344);
                     justify-content: center;
+                    justify-items: center;
                     align-content: center;
                     opacity: 0;
                     animation-duration: 900ms;
                     animation-fill-mode: both;
                     animation-delay: 80ms;
                     cursor: pointer;
+                    z-index: 2;
+
+
+                    &:hover img {
+                            width: 100%;
+                            height: 100%;
+                            align-self: center;
+                            justify-self: center;
+                        }
 
                     & img {
-                        width: 50px;
-                        height: 50px;
+                        width: 55px;
+                        height: 55px;
                         align-self: center;
-                        z-index: 2;
                         pointer-events: none;
-
+                        transition: width 300ms, height 300ms;
+                        
                     }
 
                 }
@@ -268,25 +390,26 @@ div.side-nav {
     width: 100px;
     animation-duration: var(--animationTime);
     animation-fill-mode: both;
-    opacity: var(--opacity);
     transform: translateY(85vh);
     cursor: pointer;
-    transition: opacity 400ms;
 
-    &:hover {
+    &:hover path {
         opacity: calc(var(--opacity) / var(--opacity));
+        stroke-width: 2px;
     }
 
     & > svg {
         width: auto;
         height: auto;
 
-        & path {
+        & > path {
             stroke: black;
             stroke-width: 1px;
             animation-name: svg-ARROWBOTH-start;
             animation-duration: calc(var(--animationTime) / 1.4);
             animation-fill-mode: both;
+            opacity: 0.3;
+            transition: opacity 400ms, stroke-width 200ms;
         }
 
         & #svg-arrow-tip {
@@ -391,4 +514,16 @@ div.side-nav {
 @keyframes svg-ARROWBOTH-down {
     from {transform: translateY(85vh);}
     to {transform: translateY(1vh);}
+}
+
+/*  */
+
+@keyframes svg-TIMELINECIRCLE-mouseover {
+    from {fill: url(#mouseout); r: 25.5; opacity: 0.7;}
+    to {fill: url(#mouseover); r: 40; opacity: 1}
+}
+
+@keyframes svg-TIMELINECIRCLE-mouseout {
+    from {fill: url(#mouseover); r: 40; opacity: 1;}
+    to {fill: url(#mouseout); r: 25.5; opacity: 0.7;}
 }
