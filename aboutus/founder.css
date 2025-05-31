@@ -3,6 +3,10 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+    --profileBannerTop: 60vh;
+}
+
 div.side-nav {
     background-color: antiquewhite;
     width: 8%;
@@ -45,6 +49,8 @@ div.side-nav {
 }
 
 .main-body {
+    --profileBannerTop: 60vh;
+
     display: flex;
     flex-wrap: wrap;
     position: absolute;
@@ -53,7 +59,7 @@ div.side-nav {
     max-width: 92%;
     min-width: 100vh;
     width: 92%;
-    height: 100%;
+    height: calc(fit-content + var(--profileBannerTop));
     justify-self: center;
     justify-content: center;
     z-index: 0;
@@ -86,6 +92,7 @@ div.side-nav {
     }
     /*  */
     & > div.profile-banner {
+        padding-bottom: 10%;
         position: relative;
         display: flex;
         align-content: start;
@@ -93,7 +100,7 @@ div.side-nav {
         flex-wrap: wrap;
         height: fit-content;
         width: 100%;
-        top: 60%;
+        top: var(--profileBannerTop);
         justify-content: center;
         background-color: white;
 
@@ -124,7 +131,7 @@ div.side-nav {
             position: relative;
             bottom: 100px;
             text-align: center;
-            margin-bottom: 180px;
+            margin-bottom: 100px;
             width: 30%;
             align-items: center;
 
@@ -144,9 +151,9 @@ div.side-nav {
                     justify-content: center;
                     align-content: center;
                     opacity: 0;
-                    animation-duration: 700ms;
+                    animation-duration: 900ms;
                     animation-fill-mode: both;
-                    animation-delay: 50ms;
+                    animation-delay: 80ms;
                     cursor: pointer;
 
                     & img {
@@ -247,6 +254,54 @@ div.side-nav {
     }
 }
 
+.svg-arrow {
+    --animationTime: 1200ms;
+    --opacity: 0.3;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1000;
+    background-color: transparent;
+    height: 100px;
+    width: 100px;
+    animation-duration: var(--animationTime);
+    animation-fill-mode: both;
+    opacity: var(--opacity);
+    transform: translateY(85vh);
+    cursor: pointer;
+    transition: opacity 400ms;
+
+    &:hover {
+        opacity: calc(var(--opacity) / var(--opacity));
+    }
+
+    & > svg {
+        width: auto;
+        height: auto;
+
+        & path {
+            stroke: black;
+            stroke-width: 1px;
+            animation-name: svg-ARROWBOTH-start;
+            animation-duration: calc(var(--animationTime) / 1.4);
+            animation-fill-mode: both;
+        }
+
+        & #svg-arrow-tip {
+            d: path("M5 35L35 65L65 35");
+            animation-name: svg-ARROWTIP-start;
+        }
+
+        & #svg-arrow-line {
+            animation-name: svg-ARROWLINE-start;
+        }
+    }
+
+
+}
+
 /* vvv KEYFRAMES vvv */
 
 @keyframes fadeone {
@@ -293,7 +348,47 @@ div.side-nav {
 }
 
 @keyframes appearOut {
-    from {opacity: 1; transform: rotate(360deg);}
-    to {opacity: 0; transform: rotate(90deg);  width: 100px; height: 100px; filter: blur(10px);}
+    from {opacity: 1; transform: rotate(0deg);}
+    to {opacity: 0; transform: rotate(-90deg);  width: 100px; height: 100px; filter: blur(10px);}
 }
 
+/* KEYFRAMES FOR SVG */
+/* Naming conventions: type-NAME-uniquetag */
+
+@keyframes svg-ARROWBOTH-start {
+    0% {opacity: 0;}
+    50% {opacity: 1;} 
+    100% {opacity: 1;} 
+}
+
+@keyframes svg-ARROWLINE-start {
+    0% {d: path("M35 5V5"); stroke-width: 2px;}
+    50% {d: path("M35 5V5"); stroke-width: 4px;}
+    100% {d: path("M35 5V65");}
+}
+
+@keyframes svg-ARROWTIP-start {
+    0% {d: path("M35 35L35 35L35 35"); stroke-width: 2px;}
+    50% {d: path("M5 35L35 35L65 35"); stroke-width: 4px;}
+    100% {d: path("M5 35L35 65L65 35");}
+}
+
+@keyframes svg-ARROWTIP-downwards {
+    0% {d: path("M5 35L35 5L65 35"); stroke-width: 2px;}
+    100% {d: path("M5 35L35 65L65 35");}
+}
+
+@keyframes svg-ARROWTIP-upwards {
+    0% {d: path("M5 35L35 65L65 35"); stroke-width: 2px;}
+    100% {d: path("M5 35L35 5L65 35");}
+}
+
+@keyframes svg-ARROWBOTH-up {
+    from {transform: translateY(1vh);}
+    to {transform: translateY(85vh);}
+}
+
+@keyframes svg-ARROWBOTH-down {
+    from {transform: translateY(85vh);}
+    to {transform: translateY(1vh);}
+}
