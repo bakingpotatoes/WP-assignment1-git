@@ -4,8 +4,373 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop</title>
+    <link rel="stylesheet" href="./shop.css">
 </head>
 <body>
-    
+    <div class="side-nav" id="side-nav">
+        <nav>
+            <div>
+                <!--Put this in a div so you can resize the container itself anytime-->
+                <img id="home-image-button" src="../images/Untitled.png" alt="Home">
+            </div>
+            <div>
+                <img id="contact-image-button" src="../images/Untitled.png" alt="Contact">
+            </div>
+            <div>
+                <img id="aboutus-image-button" src="../images/Untitled.png" alt="AboutUs">
+            </div>
+             <div>
+                <img id="shop-image-button" src="../images/Untitled.png" alt="Shop">
+            </div>
+        </nav>
+    </div>
+    <div class="context-menu" id="context"> <!--The content inside the side nav bar's "open up page"-->
+        <article></article>
+
+    </div>
+    <div class="main-body"> <!--Where your main content goes-->
+        <header class="top-nav" id="top-nav">
+                <section id="topnavbox1">
+                    <div>
+                        <p>Section 1</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox2">
+                    <div>
+                        <p>Section 2</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox3">
+                    <div>
+                        <p>Section 3</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox4">
+                    <div>
+                        <p>Section 4</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+        </header>
+        <section class="main" id="main">
+            <div style="font-family:Georgia, 'Times New Roman', Times, serif;font-size: 30px;width: 70%;text-align: center;word-break: break-all;"><b>IMAGE CAROUSEL FOR ADs</b></div>
+            <div class="image-carousel">
+                <svg>
+                    <rect width="100" height="100" x="1" y="100" style="stroke: blue; stroke-width: 1px;fill: black;"/>
+                </svg>
+                <div class="left-button"></div>
+                <div class="right-button"></div>
+            </div>
+            <div class="shop-catalog" id="shop-catalog">
+                <!-- Each clothing item is added here through JS, it will have to have a NAME, PRICE, COVER IMAGE, COLOURS IT COMES IN, AVALIABLES SIZES, STOCK -->
+                <!-- First, we place a search box on the left side, and on the far right, a filter to sort by what -->
+                <div id="top-query">
+                    <section class="search" id="search">
+                        <p>Search:</p>
+                        <input type="text" id="search-box" placeholder="Search by Name">
+                        <button>Search</button>
+                    </section>
+                    <section class="filter" id="filter">
+                        <p>Filter by:</p>
+                        <select name="filter-by" id="filter-by">
+                            <option value="NA">Choose a filter</option>
+                            <option value="alphabetically">A-Z</option>
+                            <option value="lowest-to-highest">$ - $$$</option>
+                            <option value="highest-to-lowest">$$$ - $</option>
+                        </select>
+                    </section>
+                </div>
+                <div class="wardrobe" id="wardrobe">
+                    <div class="shop-item" id="shop-item">
+                        <img src="../images/Untitled.png" alt="">
+                        <p>Name Of Shirt</p>
+                        <p style="color: rgb(106, 106, 106);">Type</p> 
+                        <div id="material" style="margin-bottom: 10px;">Ratio% Cotton, Ratio% Wool, Ratio% Polyester</div>
+                        <div id="type">Casual/Non-Casual</div>
+                        <p>Colours</p>
+                        <div id="colors">
+                            <div class="color-obj"></div>
+                            <div class="color-obj"></div>
+                            <div class="color-obj"></div>
+                            <div class="color-obj"></div>
+                            <div class="color-obj"></div>
+                        </div>
+                        <button>
+                            Add to Cart
+                        </button>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </section>
+        
+        <!--Leave this out, this is a separate and universal container, followed by the eventual addition of -->
+        <div class="user-profile">
+            <img id="user-profile-icon" src="../images/istockphoto-1300845620-612x612.jpg" alt="">
+        </div>
+    </div>
+
+<!-- JAVASCRIPT -->
+
+    <script type="text/javascript">
+        // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
+        const navCont = document.getElementById("side-nav");
+        const topNav = document.querySelector("#top-nav").children;
+        let contextCont = document.getElementById("context");
+        let userProfileButton = document.querySelector("#user-profile-icon")
+        let maxWidth = navCont.offsetWidth;
+        let minWidth = maxWidth - contextCont.offsetWidth;
+
+
+        let animTimeAxis = minWidth; //most right digit is ALWAYS the miliseconds in hundrenths, other digits are seconds, when theres only 1 digit, its 0 seconds + N hundred miliseconds
+        let timer
+        const context = document.querySelector("#context");
+        const elementObjects = { //THIS STORES MY OBJECTS THAT CAN BE INTERACTED WITH ^^ im so happy yay
+            //contains objectid, directTo when clicked, (for context menu only: a title, and a context text)
+            "home-image-button" : [document.getElementById("home-image-button"), "../index/index.html", createContextContent("<b>Go home</b> <br> View our homepage again!")],
+            "contact-image-button" : [document.getElementById("contact-image-button"), "../contact/contact.html", createContextContent("<b>Contact Us!</b> <br> Apply for a form or get our contact information")],
+            "aboutus-image-button" : [document.getElementById("aboutus-image-button"), "../aboutus/aboutus.html", createContextContent("<b>About Us</b> <br> Learn more about us as people; our hobbies and timeline!")],
+            "shop-image-button" : [document.getElementById("shop-image-button"), "../shop/shop.html", createContextContent("<b>Shop</b> <br> Take a look around our small shoplet!")]
+        }
+
+        const topNavObjects = {
+            //for later topNav content
+        }
+
+        function clamp(value, min, max) {
+            if (min != null && value < min) {
+                return parseFloat(min);
+            }
+            if (max != null && value > max) {
+                return parseFloat(max);
+            }
+            return parseFloat(value);
+        }
+
+        function instantiateItemObjects() {
+            let wardrobe = document.querySelector("#wardrobe");
+            let copyNode = document.querySelector("#shop-item");
+            let blueprint = copyNode.cloneNode(true);
+            let idList = new Array();
+
+            //sub function
+            function constructData({["name"]: name=null, ["material"]: material=null, ["type"]: type=null, ["colors"]: c1=null, ["colours"]: c2=null} = {}) { 
+                //assigning "name" local var to {name: "VALUE"}["name"]
+                // if no value, "name" local var = null
+
+                //name is to be any name really, it will be the name of the clothing, separate from the id itself (which is procedurally generated), if there is no name, name will be the id-name
+                //material is to be a list, place the ratio of the material after the material "name" (Ex: ["Wool", 1, "Polyester", 2] becomes "Wool 33.3%, Polyester 66.3%")
+                //type is to be an index, such that to assign a "type", you must follow type=1 or type=0
+                //colours is randomly generated, you just need to input a number from 1 to 5
+                
+                let color = c1 ?? c2 ?? null; //if c1 is null or undefined, use c2, if c2 is null or undefined, color = null
+                let typeLookup = {
+                    "0" : "Casual",
+                    "1" : "Non-Casual",
+                    "c" : "Casual",
+                    "nc" : "Non-Casual",
+                    "n-c" : "Non-Casual"
+                }
+                
+                let cacheMaterial = new Object();
+
+                //Setting up the name and id of the object
+                let id = String(`shop-item${idList.length + 1}`);
+                idList.push(id);
+                if (typeof name !== "string") {
+                    name = id;
+
+                } else {
+                    name = name;
+                }
+
+
+                //Instantiating the object's material(s) index
+                let sumRatio = 0;
+                if (Array.isArray(material)) {
+                    for (let i = 0; i < material.length; i++) {
+                        if (i%2 === 0) {
+                            // if there is an array, just parse the new cachematerial to be what its supposed to be
+                            cacheMaterial[`${material[i]}`] = (() => {
+                                if (typeof material[parseInt(i) + 1] !== "number") {
+                                    return 0;
+                                } else {
+                                    sumRatio += material[parseInt(i) + 1];
+                                    return material[parseInt(i) + 1]
+                                }
+                            })();
+                        }
+                    }
+                } else {
+                    cacheMaterial = "Not an Array Object";
+                    console.log(`Material argument of ${name} is not an Array Object`);
+                }
+                // we convert the floats from ex: 20.4 to a percentage ratio of the total materials
+                let materialKeys = Object.keys(cacheMaterial);
+                for (let i = 0; i < materialKeys.length; i++) {
+                    let ratio = parseFloat(cacheMaterial[`${materialKeys[i]}`]) / parseFloat(sumRatio)
+                    cacheMaterial[`${materialKeys[i]}`] = `${(ratio * 100).toFixed(1)}%`;
+                }
+
+
+                //Checking if the desired type is "Non-Casual" or "Casual"
+                if (typeof type === "number") {
+                    type = typeLookup[`${type}`]
+                } else if (typeof type === "string") {
+                    type = typeLookup[`${String(type).toLowerCase()}`]
+                } else {
+                    type = null;
+                }
+
+
+                //random color generator 
+                let cacheColors = new Array();
+                color = clamp(color, 3, 5);
+                if (typeof color !== "number") {
+                    color = 3;
+                }
+                for (let i = 0; i < color; i++) {
+                    let n = 0;
+                    let randR = parseFloat(Math.random() * 255).toFixed(0);
+                    let randG = parseFloat(Math.random() * 255).toFixed(0);
+                    let randB = parseFloat(Math.random() * 255).toFixed(0);
+                    let randO = parseFloat(Math.random()).toFixed(0);
+                    let rgba = [clamp(randR, 0, 255), clamp(randG, 0, 255), clamp(randB, 0, 255), clamp(randO, 0.5, 1)];
+                    cacheColors.push(rgba);
+                }
+
+
+
+
+                return {
+                    name: name,
+                    material: cacheMaterial,
+                    type: type,
+                    colors: cacheColors
+                }
+
+
+            }
+
+
+            //here we are to override the object "blueprint", for every item in a list
+            const pendingObjOverrides = [
+                constructData({name: "test1", material: ["testMaterial", 13.1, "test2", 12.5, "test3", 10.5], colors: 1000, type: "nc"})
+
+            ]
+            console.log(pendingObjOverrides[0])
+            console.log(Math.random())
+
+
+            // blueprint.querySelector("#type").innerHTML = "test"
+
+            // wardrobe.appendChild(blueprint);
+
+        }
+
+
+        function createContextContent(title, description) {
+            let contextMenuContent = {
+                "label" : title 
+            }
+            return contextMenuContent;
+        }
+
+        function moveContext(event) {
+            let ID = event.currentTarget.id;
+            let navIcon = document.getElementById(ID)
+            let translateSpeed = 12;
+            if (event.type === "mouseenter") {
+                let targetRect = document.getElementById(ID);
+                let rectClientDimension = targetRect.getBoundingClientRect();
+                let contextContent = document.querySelector("#context > article")
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis + translateSpeed), min=minWidth, max=(maxWidth))}, 10); //stored in a variable so we can stop the timer later
+                contextContent.innerHTML = String(elementObjects[ID][2]["label"]);
+                contextContent.style.top = String(rectClientDimension.top.toFixed() + "px");
+                //as long as mouse is on element, increment timer, pass it through a function that determines the y position (the viewport position) based on a sine function
+            } else if (event.type === "mouseout") {
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis - translateSpeed), min=minWidth, max=(maxWidth))}, 10);
+            } else if (event.type === "click") {
+                clearInterval(timer);
+                location.replace(elementObjects[String(ID)][1]);
+            }
+                
+        }
+
+        function topNavResponse(event) {
+            let evTarget = event.currentTarget.parentNode.id;
+            let text = document.querySelector(`#${evTarget} > div > p`);
+
+            if (event.type == "mouseenter") {
+                text.animate(
+                    [
+                        {fontSize: "15px"},
+                        {fontSize: "20px"}
+
+                    ],
+                    {
+                        fill: "both",
+                        duration:  200
+                    }
+                )
+            } else if (event.type == "mouseout") {
+                text.animate(
+                    [
+                        {fontSize: "20px"},
+                        {fontSize: "15px"}
+
+                    ],
+                    {
+                        fill: "both",
+                        duration:  200
+                    }
+                )
+            } else if (event.type == "click") {
+                alert("This is the secondary nav bar, its currently missing the dropdown")
+            }
+         }
+
+        for (const element in elementObjects) { //(any declarations;, condition for the loop to keep going;, alter anything to make sure the loop may end;) OR (const blockVar in Matrix)
+            let EL = elementObjects[element][0];
+            EL.addEventListener("click", moveContext); //APPARENTLY, CALLING A FUNCTION LIKE THIS IS JUST "REFERENCING IT", DON'T DO moveContext(event) OR YOU WOULD BE CALLING IT WITHOUT PARAMETERS IMMEDIATELY APPARENTLY ToT
+            EL.addEventListener("mouseenter", moveContext); //Ig this is a "addEventListener constructor", the first argument to be passed in is ALWAYS the event object ToT wtffff is this shitt
+            EL.addEventListener("mouseout", moveContext); //i want to kill the people who made js
+
+        }
+
+        for (let i = 0; i < topNav.length; i++) {
+            let topNavChild = document.querySelector(`#${topNav[i].id} > div`);
+            topNavChild.addEventListener("click", topNavResponse);
+            topNavChild.addEventListener("mouseenter", topNavResponse);
+            topNavChild.addEventListener("mouseout", topNavResponse);
+            
+        }
+
+        instantiateItemObjects();
+
+        setInterval(() => { //this will be my defacto update cycle asynch function
+
+            // context.innerText = elementObjects[String(currContext)][2];
+            context.style.left = String(animTimeAxis + "px");
+            
+        }, 10);
+
+
+
+    </script>
 </body>
 </html>
