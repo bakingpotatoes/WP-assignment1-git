@@ -54,11 +54,11 @@
                         </svg>
                     </div>
                 </section>
-                <section id="topnavbox4">
-                    <div>
-                        <p>Section 4</p>
-                        <svg viewBox="0 0 22 22">
-                            <path/>
+                <section id="cart">
+                    <div onclick="(() => {location.href = './checkout.html'})()">
+                        <p>Cart</p>
+                        <svg style="height: 35px; width: 35px;" viewBox="0 0 50 50">
+                            <path class="shopping-cart" />
                         </svg>
                     </div>
                 </section>
@@ -93,13 +93,15 @@
                 </div>
                 <div class="wardrobe" id="wardrobe">
                     <div class="shop-item" id="shop-item">
-                        <img src="../images/Untitled.png" alt="">
-                        <p>Name Of Shirt</p>
-                        <p style="color: rgb(106, 106, 106);">Type</p> 
-                        <div id="material" style="margin-bottom: 10px;">Ratio% Cotton, Ratio% Wool, Ratio% Polyester</div>
+                        <article>
+                            <img src="../images/sampleshirt.png" alt="">
+                        </article>
+                        <p id="name">SAMPLE NAME</p>
+                        <p>Material & Type</p> 
+                        <div id="material" style="margin-bottom: 10px;"><i>Ratio% Cotton, Ratio% Wool, Ratio% Polyester</i></div>
                         <div id="type">Casual/Non-Casual</div>
                         <p>Colours</p>
-                        <div id="colors">
+                        <div id="colors"> <!--Change the inline style each time-->
                             <div class="color-obj"></div>
                             <div class="color-obj"></div>
                             <div class="color-obj"></div>
@@ -125,6 +127,19 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
+        function cartSetter(cache) { //stores all the objects in the pendingObjectOverrides constant or something like that
+            let stringCache = JSON.stringify(cache);
+            localStorage.setItem("cart-storage", stringCache);
+        }
+
+        function itemSetter(item) { //stores a single id/name of the object that you can find in the cartStorage
+            localStorage.setItem("selected-shop-item-object", JSON.stringify(item));
+        }
+
+        let cartGetter = localStorage.getItem("cart-storage");
+        let itemGetter = localStorage.getItem("selected-shop-item-object");
+        let shopObjectGetter = localStorage.getItem("global-shop-item-objects")
+
         // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
         const navCont = document.getElementById("side-nav");
         const topNav = document.querySelector("#top-nav").children;
@@ -160,13 +175,15 @@
         }
 
         function instantiateItemObjects() {
-            let wardrobe = document.querySelector("#wardrobe");
-            let copyNode = document.querySelector("#shop-item");
-            let blueprint = copyNode.cloneNode(true);
+            const wardrobe = document.querySelector("#wardrobe");
+            const copyNode = document.querySelector("#shop-item");
+            wardrobe.removeChild(wardrobe.children[0]);
+
             let idList = new Array();
 
+
             //sub function
-            function constructData({["name"]: name=null, ["material"]: material=null, ["type"]: type=null, ["colors"]: c1=null, ["colours"]: c2=null} = {}) { 
+            function constructData({["name"]: name=null, ["material"]: material=null, ["type"]: type=null, ["colors"]: c1=null, ["colours"]: c2=null, ["price"]: price=0} = {}) { 
                 //assigning "name" local var to {name: "VALUE"}["name"]
                 // if no value, "name" local var = null
 
@@ -176,12 +193,17 @@
                 //colours is randomly generated, you just need to input a number from 1 to 5
                 
                 let color = c1 ?? c2 ?? null; //if c1 is null or undefined, use c2, if c2 is null or undefined, color = null
-                let typeLookup = {
+                let typeLookup = { //add more dictionary terms if you want
                     "0" : "Casual",
                     "1" : "Non-Casual",
                     "c" : "Casual",
                     "nc" : "Non-Casual",
-                    "n-c" : "Non-Casual"
+                    "n-c" : "Non-Casual",
+                    "wi" : "Winter-Wear",
+                    "co" : "Cozy",
+                    "com" : "Comfort",
+                    "wa" : "Warm-Assured"
+
                 }
                 
                 let cacheMaterial = new Object();
@@ -251,33 +273,93 @@
                     cacheColors.push(rgba);
                 }
 
-
-
-
                 return {
                     name: name,
                     material: cacheMaterial,
                     type: type,
-                    colors: cacheColors
+                    colors: cacheColors,
+                    price: price
                 }
-
-
             }
 
 
             //here we are to override the object "blueprint", for every item in a list
             const pendingObjOverrides = [
-                constructData({name: "test1", material: ["testMaterial", 13.1, "test2", 12.5, "test3", 10.5], colors: 1000, type: "nc"})
-
+                constructData({name: "The Cotton Fields", material: ["Cotton", 10, "Wool", 2, "Linen", 0.1], colors: 1000, type: "com", price: 10}),
+                constructData({name: "Wooly Mammoth", material: ["Wool", 100, "Polyester", 2, "Linen", 0.1], colors: 1000, type: "wa", price: 15}),
+                constructData({name: "The Flanders", material: ["Flannel", 50, "Polyester", 20, "Linen", 0.5], colors: 1000, type: "c", price: 20}),
+                constructData({name: "T Shirt (ice cube reference)", material: ["Polyester", 10, "Linen", 0.1], colors: 1000, type: "c", price: 10}),
+                constructData({name: "Collar Shirt Style 1", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
+                constructData({name: "Collar Shirt Style 2", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
+                constructData({name: "Collar Shirt Style 3", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
+                constructData({name: "Button Up :3", material: ["Buttons", 10, "Almost Cotton", 1, "Linen", 0.01], colors: 1000, type: "c"}),
+                constructData({name: "That one black hoodie", material: ["Angst", 30, "Comfort", 20, "'i take a nap in these'", 10], colors: 1000, type: "com"}),
             ]
-            console.log(pendingObjOverrides[0])
-            console.log(Math.random())
 
+            localStorage.setItem("global-shop-item-objects", JSON.stringify(pendingObjOverrides));
 
-            // blueprint.querySelector("#type").innerHTML = "test"
+            // add all the new objects as containers into the HTML DOM
+            for (let i = 0; i < pendingObjOverrides.length; i++) {
+                //Use the blueprint, change the blueprint and append the blueprint
+                let test = copyNode.cloneNode(true);
+                let targetObj = pendingObjOverrides[i];
+                let materialKeys = Object.keys(targetObj.material);
+                let nameField = test.querySelector("#name");
+                test.id = targetObj.name
+                let materialField = test.querySelector("#material");
+                materialField.innerHTML = "";
+                let typeField = test.querySelector("#type");
+                let colorField = test.querySelector("#colors");
+                
+                nameField.innerHTML = targetObj.name;
+                //finite material loop
+                for (let i = 0; i < materialKeys.length; i++) {
+                    //accessed the keys
+                    materialField.innerHTML += `<b>${materialKeys[i]}</b> `;
+                    materialField.innerHTML += `${targetObj.material[`${materialKeys[i]}`]}${
+                        (() => {
+                            if (i == (materialKeys.length - 1)) {
+                                return " ";
 
-            // wardrobe.appendChild(blueprint);
+                            } else {
+                                return ",<br>";
 
+                            }
+                        })()
+                    }`;
+                }
+
+                typeField.innerHTML = `<i>${targetObj.type}</i>`;
+
+                wardrobe.appendChild(test);
+
+            }
+
+            let cartCache = new Array();
+            //in the same case, give all the root containers an eventlistener
+            for (let i = 0; i < wardrobe.children.length; i++) {
+                let childNode = wardrobe.children[i];
+                let button = childNode.querySelector("button");
+                childNode.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    let shopItem = event.currentTarget.id;
+                    itemSetter(shopItem);
+
+                    
+
+                })
+                button.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    let parent = event.currentTarget.parentNode.id;
+                    //now that we have the parent id which IS in the html DOM
+                    // we are to store important data in a library about the product into the cartStorage
+                    if (!cartCache.includes(parent)) { //checks if the cartStorage already contains this shit
+                        cartCache.push(parent);
+                        cartSetter(cartCache); //reinitialises the cartStorage with the cartCache 
+
+                    }
+                })
+            }
         }
 
 
@@ -339,7 +421,7 @@
                         duration:  200
                     }
                 )
-            } else if (event.type == "click") {
+            } else if (event.type == "click" && evTarget !== "cart") {
                 alert("This is the secondary nav bar, its currently missing the dropdown")
             }
          }
@@ -363,8 +445,6 @@
         instantiateItemObjects();
 
         setInterval(() => { //this will be my defacto update cycle asynch function
-
-            // context.innerText = elementObjects[String(currContext)][2];
             context.style.left = String(animTimeAxis + "px");
             
         }, 10);
