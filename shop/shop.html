@@ -56,7 +56,7 @@
                 </section>
                 <section id="cart">
                     <div onclick="(() => {location.href = './checkout.html'})()">
-                        <p>Cart</p>
+                        <p></p>
                         <svg style="height: 35px; width: 35px;" viewBox="0 0 50 50">
                             <path class="shopping-cart" />
                         </svg>
@@ -103,10 +103,6 @@
                         <p>Colours</p>
                         <div id="colors"> <!--Change the inline style each time-->
                             <div class="color-obj"></div>
-                            <div class="color-obj"></div>
-                            <div class="color-obj"></div>
-                            <div class="color-obj"></div>
-                            <div class="color-obj"></div>
                         </div>
                         <button>
                             Add to Cart
@@ -127,6 +123,10 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
+        let cartGetter = localStorage.getItem("cart-storage");
+        let itemGetter = localStorage.getItem("selected-shop-item-object");
+        let shopObjectGetter = localStorage.getItem("global-shop-item-objects")
+        
         function cartSetter(cache) { //stores all the objects in the pendingObjectOverrides constant or something like that
             let stringCache = JSON.stringify(cache);
             localStorage.setItem("cart-storage", stringCache);
@@ -134,23 +134,20 @@
 
         function itemSetter(item) { //stores a single id/name of the object that you can find in the cartStorage
             localStorage.setItem("selected-shop-item-object", JSON.stringify(item));
+            console.log("triggered");
         }
-
-        let cartGetter = localStorage.getItem("cart-storage");
-        let itemGetter = localStorage.getItem("selected-shop-item-object");
-        let shopObjectGetter = localStorage.getItem("global-shop-item-objects")
 
         // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
         const navCont = document.getElementById("side-nav");
         const topNav = document.querySelector("#top-nav").children;
         let contextCont = document.getElementById("context");
-        let userProfileButton = document.querySelector("#user-profile-icon")
+        let userProfileButton = document.querySelector("#user-profile-icon");
         let maxWidth = navCont.offsetWidth;
         let minWidth = maxWidth - contextCont.offsetWidth;
 
 
         let animTimeAxis = minWidth; //most right digit is ALWAYS the miliseconds in hundrenths, other digits are seconds, when theres only 1 digit, its 0 seconds + N hundred miliseconds
-        let timer
+        let timer;
         const context = document.querySelector("#context");
         const elementObjects = { //THIS STORES MY OBJECTS THAT CAN BE INTERACTED WITH ^^ im so happy yay
             //contains objectid, directTo when clicked, (for context menu only: a title, and a context text)
@@ -259,7 +256,7 @@
 
                 //random color generator 
                 let cacheColors = new Array();
-                color = clamp(color, 3, 5);
+                color = clamp(color, 1, 5);
                 if (typeof color !== "number") {
                     color = 3;
                 }
@@ -285,14 +282,14 @@
 
             //here we are to override the object "blueprint", for every item in a list
             const pendingObjOverrides = [
-                constructData({name: "The Cotton Fields", material: ["Cotton", 10, "Wool", 2, "Linen", 0.1], colors: 1000, type: "com", price: 10}),
+                constructData({name: "The Cotton Fields", material: ["Cotton", 10, "Wool", 2, "Linen", 0.1], colors: 4, type: "com", price: 10}),
                 constructData({name: "Wooly Mammoth", material: ["Wool", 100, "Polyester", 2, "Linen", 0.1], colors: 1000, type: "wa", price: 15}),
                 constructData({name: "The Flanders", material: ["Flannel", 50, "Polyester", 20, "Linen", 0.5], colors: 1000, type: "c", price: 20}),
                 constructData({name: "T Shirt (ice cube reference)", material: ["Polyester", 10, "Linen", 0.1], colors: 1000, type: "c", price: 10}),
                 constructData({name: "Collar Shirt Style 1", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
                 constructData({name: "Collar Shirt Style 2", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
                 constructData({name: "Collar Shirt Style 3", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
-                constructData({name: "Button Up :3", material: ["Buttons", 10, "Almost Cotton", 1, "Linen", 0.01], colors: 1000, type: "c"}),
+                constructData({name: "Button Up", material: ["Buttons", 10, "Almost Cotton", 1, "Linen", 0.01], colors: 1000, type: "c"}),
                 constructData({name: "That one black hoodie", material: ["Angst", 30, "Comfort", 20, "'i take a nap in these'", 10], colors: 1000, type: "com"}),
             ]
 
@@ -310,6 +307,8 @@
                 materialField.innerHTML = "";
                 let typeField = test.querySelector("#type");
                 let colorField = test.querySelector("#colors");
+                let colorBoxCopy = test.querySelector("div.color-obj");
+                colorField.removeChild(colorField.children[0]);
                 
                 nameField.innerHTML = targetObj.name;
                 //finite material loop
@@ -329,6 +328,16 @@
                     }`;
                 }
 
+                //clone the color box and for every item in the colors list, then give that box a background color of the rgba value
+                for (let i = 0; i < targetObj.colors.length; i++) {
+                    let colorSelect = targetObj.colors[i];
+                    let colorBox = colorBoxCopy.cloneNode(true);
+                    colorBox.style.backgroundColor = `rgba(${colorSelect[0]},${colorSelect[1]},${colorSelect[2]},${colorSelect[3]})`;
+                    colorField.appendChild(colorBox)
+                    
+
+                }
+
                 typeField.innerHTML = `<i>${targetObj.type}</i>`;
 
                 wardrobe.appendChild(test);
@@ -344,6 +353,8 @@
                     event.stopPropagation();
                     let shopItem = event.currentTarget.id;
                     itemSetter(shopItem);
+                    itemGetter;
+                    location.href = "./iteminfo.html"
 
                     
 
@@ -388,41 +399,72 @@
                 timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis - translateSpeed), min=minWidth, max=(maxWidth))}, 10);
             } else if (event.type === "click") {
                 clearInterval(timer);
-                location.replace(elementObjects[String(ID)][1]);
+                location.href = `${elementObjects[String(ID)][1]}`;
             }
                 
         }
 
         function topNavResponse(event) {
             let evTarget = event.currentTarget.parentNode.id;
-            let text = document.querySelector(`#${evTarget} > div > p`);
 
-            if (event.type == "mouseenter") {
-                text.animate(
-                    [
-                        {fontSize: "15px"},
-                        {fontSize: "20px"}
+            if (evTarget !== "cart") {
+                let text = document.querySelector(`#${evTarget} > div > p`);
 
-                    ],
-                    {
-                        fill: "both",
-                        duration:  200
-                    }
-                )
-            } else if (event.type == "mouseout") {
-                text.animate(
-                    [
-                        {fontSize: "20px"},
-                        {fontSize: "15px"}
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {fontSize: "15px"},
+                            {fontSize: "20px"}
 
-                    ],
-                    {
-                        fill: "both",
-                        duration:  200
-                    }
-                )
-            } else if (event.type == "click" && evTarget !== "cart") {
-                alert("This is the secondary nav bar, its currently missing the dropdown")
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {fontSize: "20px"},
+                            {fontSize: "15px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "click") {
+                    alert("This is the secondary nav bar, its currently missing the dropdown")
+                }
+            } else {
+                let text = document.querySelector(`#${evTarget} > div > svg`);
+
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {width: "35px", height: "35px"},
+                            {width: "50px", height: "50px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {width: "50px", height: "50px"},
+                            {width: "35px", height: "35px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                }
             }
          }
 

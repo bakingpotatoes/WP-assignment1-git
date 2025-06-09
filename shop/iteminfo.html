@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <link rel="stylesheet" href="./iteminfo.css">
+</head>
+<body>
+    <div class="side-nav" id="side-nav">
+        <nav>
+            <div>
+                <!--Put this in a div so you can resize the container itself anytime-->
+                <img id="home-image-button" src="../images/Untitled.png" alt="Home">
+            </div>
+            <div>
+                <img id="contact-image-button" src="../images/Untitled.png" alt="Contact">
+            </div>
+            <div>
+                <img id="aboutus-image-button" src="../images/Untitled.png" alt="AboutUs">
+            </div>
+             <div>
+                <img id="shop-image-button" src="../images/Untitled.png" alt="Shop">
+            </div>
+        </nav>
+    </div>
+    <div class="context-menu" id="context"> <!--The content inside the side nav bar's "open up page"-->
+        <article></article>
+
+    </div>
+    <div class="main-body"> <!--Where your main content goes-->
+        <header class="top-nav" id="top-nav">
+                <section id="topnavbox1">
+                    <div>
+                        <p>Section 1</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox2">
+                    <div>
+                        <p>Section 2</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox3">
+                    <div>
+                        <p>Section 3</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="cart">
+                    <div onclick="(() => {location.href = './checkout.html'})()">
+                        <p></p>
+                        <svg style="height: 35px; width: 35px;" viewBox="0 0 50 50">
+                            <path class="shopping-cart" />
+                        </svg>
+                    </div>
+                </section>
+        </header>
+
+        <div class="sub-main">
+            <div>
+                <section id="img-container">
+                    <img src="../images/sampleshirt.png" alt="">
+                </section>
+            </div>
+            <div>
+                <section id="info-section">
+                    <div id="name">NAME</div>
+                    <div id="materials">MATERIALS</div>
+                    <div id="type">TYPE<div>twet</div></div>
+                    <div id="colors">
+                        Pick A Style
+                        <div id="color-boxes">
+                            <div toggle-val="-1"></div>
+                        </div>
+                    </div>
+                    <div id="price">
+                        <div id="defacto"></div>
+                        <div id="additional">additional</div>
+                    </div>
+                    <div id="quantity">QUANTITIES</div>
+                    <div id="add-to-cart">
+                        <button onclick="" onmouseenter="">
+                            Add to Cart
+                            <div></div>
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!--Leave this out, this is a separate and universal container, followed by the eventual addition of -->
+        <div class="user-profile">
+            <img id="user-profile-icon" src="../images/istockphoto-1300845620-612x612.jpg" alt="">
+        </div>
+    </div>
+
+<!-- JAVASCRIPT -->
+
+    <script type="text/javascript">
+
+        let cartGetter = localStorage.getItem("cart-storage");
+        let itemGetter = localStorage.getItem("selected-shop-item-object");
+        let shopObjectGetter = localStorage.getItem("global-shop-item-objects");
+
+        function cartSetter(cache) { //stores all the objects in the pendingObjectOverrides constant or something like that
+            let stringCache = JSON.stringify(cache);
+            localStorage.setItem("cart-storage", stringCache);
+        }
+
+        // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
+        let navCont = document.getElementById("side-nav");
+        let contextCont = document.getElementById("context");
+        let userProfileButton = document.querySelector("#user-profile-icon")
+        let maxWidth = navCont.offsetWidth;
+        let minWidth = maxWidth - contextCont.offsetWidth;
+        const topNav = document.querySelector("#top-nav").children;
+
+
+        let animTimeAxis = minWidth; //most right digit is ALWAYS the miliseconds in hundrenths, other digits are seconds, when theres only 1 digit, its 0 seconds + N hundred miliseconds
+        let timer
+        const context = document.querySelector("#context");
+        const elementObjects = { //THIS STORES MY OBJECTS THAT CAN BE INTERACTED WITH ^^ im so happy yay
+            //contains objectid, directTo when clicked, (for context menu only: a title, and a context text)
+            "home-image-button" : [document.getElementById("home-image-button"), "../index/index.html", createContextContent("<b>Go home</b> <br> View our homepage again!")],
+            "contact-image-button" : [document.getElementById("contact-image-button"), "../contact/contact.html", createContextContent("<b>Contact Us!</b> <br> Apply for a form or get our contact information")],
+            "aboutus-image-button" : [document.getElementById("aboutus-image-button"), "../aboutus/aboutus.html", createContextContent("<b>About Us</b> <br> Learn more about us as people; our hobbies and timeline!")],
+            "shop-image-button" : [document.getElementById("shop-image-button"), "../shop/shop.html", createContextContent("<b>Shop</b> <br> Take a look around our small shoplet!")]
+        }
+
+        const topNavObjects = {
+            //for later topNav content
+        }
+
+        function clamp(value, min, max) {
+            if (min != null && value < min) {
+                return min;
+            }
+            if (max != null && value > max) {
+                return max;
+            }
+            return value;
+        }
+
+        function createContextContent(title, description) {
+            let contextMenuContent = {
+                "label" : title 
+            }
+            return contextMenuContent;
+        }
+
+        function moveContext(event) {
+            let ID = event.currentTarget.id;
+            let navIcon = document.getElementById(ID)
+            let translateSpeed = 12;
+            if (event.type === "mouseenter") {
+                let targetRect = document.getElementById(ID);
+                let rectClientDimension = targetRect.getBoundingClientRect();
+                let contextContent = document.querySelector("#context > article")
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis + translateSpeed), min=minWidth, max=(maxWidth))}, 10); //stored in a variable so we can stop the timer later
+                contextContent.innerHTML = String(elementObjects[ID][2]["label"]);
+                contextContent.style.top = String(rectClientDimension.top.toFixed() + "px");
+                //as long as mouse is on element, increment timer, pass it through a function that determines the y position (the viewport position) based on a sine function
+            } else if (event.type === "mouseout") {
+                clearInterval(timer); //MAKE SURE TO ALWAYS CLEARINTERVAL() OR YOU COULD BE SETTING UP MORE THAN ONE SETINTERVAL() AT A TIME
+                timer = setInterval(() => {animTimeAxis = clamp(value=(animTimeAxis - translateSpeed), min=minWidth, max=(maxWidth))}, 10);
+            } else if (event.type === "click") {
+                clearInterval(timer);
+                location.replace(elementObjects[String(ID)][1]);
+            }
+                
+        }
+
+
+        function topNavResponse(event) {
+            let evTarget = event.currentTarget.parentNode.id;
+
+            if (evTarget !== "cart") {
+                let text = document.querySelector(`#${evTarget} > div > p`);
+
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {fontSize: "15px"},
+                            {fontSize: "20px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {fontSize: "20px"},
+                            {fontSize: "15px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "click") {
+                    alert("This is the secondary nav bar, its currently missing the dropdown")
+                }
+            } else {
+                let text = document.querySelector(`#${evTarget} > div > svg`);
+
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {width: "35px", height: "35px"},
+                            {width: "50px", height: "50px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {width: "50px", height: "50px"},
+                            {width: "35px", height: "35px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                }
+            }
+        }
+
+        function colorButtonResponse(event) {
+            let button = event.currentTarget;
+            let toggleState = parseInt(button.getAttribute("toggle-val"));
+
+            if (event.type === "mouseenter" && toggleState < 0) {
+                button.style.animationName = "toggleOn";
+            } else if (event.type === "mouseout" && toggleState < 0) {
+                button.style.animationName = "toggleOff";
+            } else if (event.type === "click") {
+                for (let x of button.parentNode.children) { //checks if the other buttons are toggled
+                    if (x.getAttribute("toggle-val") > 0 && x !== this) { //this is assuming that there are other buttons that are toggled already
+                        x.setAttribute("toggle-val", -1); //force deactivates the button
+                        x.style.animationName = "toggleOff"
+                    }
+                }
+                button.setAttribute("toggle-val", toggleState*-1);
+                if (toggleState < 0) {
+                    button.style.animationName = "toggleOn";
+                } else {
+                    button.style.animationName = "toggleOff";
+                }
+                
+                (() => {
+                    for (let x of button.parentNode.children) {
+                        console.log(x.getAttribute("toggle-val"))
+                    }
+                })()
+            }
+        }
+
+        function updateSelectedColor() {
+            
+        }
+
+        function initialiseFields() {
+            let nameField = document.querySelector("#name");
+            let materialField = document.querySelector("#materials");
+            let typeField = document.querySelector("#type > div");
+            let colorsField = document.querySelector("#color-boxes");
+            let priceField = document.querySelector("#price > #defacto");
+
+            let colorBoxCopy = document.querySelector("#color-boxes > div");
+            colorsField.removeChild(colorsField.children[0]);
+
+            let objects = JSON.parse(shopObjectGetter);
+            let selectedItem = JSON.parse(itemGetter);
+            let selectedObjProperties;
+
+            for (let i = 0; i < objects.length; i++) { //just searching the lookup table for the selected object, and loading in its properties
+                let {["name"]: objectName} = objects[i];
+                if (String(selectedItem) === String(objectName)) {
+                    selectedObjProperties = objects[i];
+                }
+            }
+
+            let {["name"]: name, ["material"]: materials, ["type"]: type, ["colors"]: colors, ["price"]: price} = selectedObjProperties;
+            let materialKeys = Object.keys(materials);
+            let materialCache = new String();
+            materialField.innerHTML = "";
+            typeField.innerHTML = type;
+            priceField.innerHTML = `${price.toFixed(2)} $USD`;
+            
+
+
+            for (let i = 0; i < materialKeys.length; i++) { //initialising the materialField
+                let materialName = materialKeys[i];
+                let materialValue = materials[materialKeys[i]];
+                materialField.innerHTML += `${materialName}: ${materialValue}${(() => {
+                    if (materialKeys.indexOf(materialName) === materialKeys.length - 1) {
+                        return "";
+                    } else {
+                        return ", ";
+                    }
+                })()}`
+            }
+
+            for (let i = 0; i < colors.length; i++) { //here we add all the colors as colorBox es
+                let boxClone = colorBoxCopy.cloneNode(true);
+                let rgbVal = colors[i];
+                let rgbParse = `rgba(${rgbVal[0]},${rgbVal[1]},${rgbVal[2]},${rgbVal[3]})`;
+                boxClone.addEventListener("mouseenter", colorButtonResponse);
+                boxClone.addEventListener("mouseout", colorButtonResponse);
+                boxClone.addEventListener("click", colorButtonResponse);
+                boxClone.style.backgroundColor = rgbParse;
+                colorsField.appendChild(boxClone);
+                
+                
+            }
+
+            nameField.innerHTML = name;
+            console.log(typeField);
+
+
+        }
+        
+        for (const element in elementObjects) { //(any declarations;, condition for the loop to keep going;, alter anything to make sure the loop may end;) OR (const blockVar in Matrix)
+            let EL = elementObjects[element][0];
+            EL.addEventListener("click", moveContext); //APPARENTLY, CALLING A FUNCTION LIKE THIS IS JUST "REFERENCING IT", DON'T DO moveContext(event) OR YOU WOULD BE CALLING IT WITHOUT PARAMETERS IMMEDIATELY APPARENTLY ToT
+            EL.addEventListener("mouseenter", moveContext); //Ig this is a "addEventListener constructor", the first argument to be passed in is ALWAYS the event object ToT wtffff is this shitt
+            EL.addEventListener("mouseout", moveContext); //i want to kill the people who made js
+
+        }
+
+        for (let i = 0; i < topNav.length; i++) {
+            let topNavChild = document.querySelector(`#${topNav[i].id} > div`);
+            topNavChild.addEventListener("click", topNavResponse);
+            topNavChild.addEventListener("mouseenter", topNavResponse);
+            topNavChild.addEventListener("mouseout", topNavResponse);
+            
+        }
+
+        initialiseFields();
+        
+        setInterval(() => { //this will be my defacto update cycle asynch function
+
+            // context.innerText = elementObjects[String(currContext)][2];
+            context.style.left = String(animTimeAxis + "px");
+            
+        }, 10);
+
+
+
+    </script>
+</body>
+</html>

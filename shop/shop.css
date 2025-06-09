@@ -138,6 +138,7 @@ div.side-nav {
                 }
 
                 & > p {
+                    font-size: 15px;
                     width: max-content;
                     pointer-events: none;
                     user-select: none;
