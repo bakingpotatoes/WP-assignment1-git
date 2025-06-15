@@ -289,14 +289,14 @@
             //here we are to override the object "blueprint", for every item in a list
             const pendingObjOverrides = [
                 constructData({name: "The Cotton Fields", material: ["Cotton", 10, "Wool", 2, "Linen", 0.1], colors: 4, type: "com", price: 10}),
-                constructData({name: "Wooly Mammoth", material: ["Wool", 100, "Polyester", 2, "Linen", 0.1], colors: 1000, type: "wa", price: 15}),
-                constructData({name: "The Flanders", material: ["Flannel", 50, "Polyester", 20, "Linen", 0.5], colors: 1000, type: "c", price: 20}),
-                constructData({name: "T Shirt (ice cube reference)", material: ["Polyester", 10, "Linen", 0.1], colors: 1000, type: "c", price: 10}),
-                constructData({name: "Collar Shirt Style 1", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
-                constructData({name: "Collar Shirt Style 2", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
-                constructData({name: "Collar Shirt Style 3", material: ["Cotton", 10, "Linen", 0.5], colors: 1000, type: "c"}),
-                constructData({name: "Button Up", material: ["Buttons", 10, "Almost Cotton", 1, "Linen", 0.01], colors: 1000, type: "c"}),
-                constructData({name: "That one black hoodie", material: ["Angst", 30, "Comfort", 20, "'i take a nap in these'", 10], colors: 1000, type: "com"}),
+                constructData({name: "Wooly Mammoth", material: ["Wool", 100, "Polyester", 2, "Linen", 0.1], colors: 3, type: "wa", price: 15}),
+                constructData({name: "The Flanders", material: ["Flannel", 50, "Polyester", 20, "Linen", 0.5], colors: 3, type: "c", price: 20}),
+                constructData({name: "T Shirt (ice cube reference)", material: ["Polyester", 10, "Linen", 0.1], colors: 4, type: "c", price: 10}),
+                constructData({name: "Collar Shirt Style 1", material: ["Cotton", 10, "Linen", 0.5], colors: 2, type: "c", price: 21}),
+                constructData({name: "Collar Shirt Style 2", material: ["Cotton", 10, "Linen", 0.5], colors: 5, type: "c", price: 35}),
+                constructData({name: "Collar Shirt Style 3", material: ["Cotton", 10, "Linen", 0.5], colors: 3, type: "c", price: 20}),
+                constructData({name: "Button Up", material: ["Buttons", 10, "Almost Cotton", 1, "Linen", 0.01], colors: 1, type: "c", price: 15}),
+                constructData({name: "That one black hoodie", material: ["Unusual longing for the beyond", 30, "Comfort", 20, "'i take a nap in these'", 10], colors: 1000, type: "com", price: 1000}),
             ]
 
             localStorage.setItem("global-shop-item-objects", JSON.stringify(pendingObjOverrides));
