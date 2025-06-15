@@ -29,7 +29,101 @@
 
     </div>
     <div class="main-body"> <!--Where your main content goes-->
-        
+        <header class="top-nav" id="top-nav">
+                <section id="topnavbox1">
+                    <div>
+                        <p>Section 1</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox2">
+                    <div>
+                        <p>Section 2</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="topnavbox3">
+                    <div>
+                        <p>Section 3</p>
+                        <svg viewBox="0 0 22 22">
+                            <path/>
+                        </svg>
+                    </div>
+                </section>
+                <section id="cart">
+                    <div onclick="(() => {location.href = './checkout.html'})()">
+                        <p></p>
+                        <svg style="height: 35px; width: 35px;" viewBox="0 0 50 50">
+                            <path class="shopping-cart" />
+                        </svg>
+                    </div>
+                </section>
+        </header>
+
+        <div class="sub-main">
+            <div id="sticky-alert">
+                <article>
+                    <p> <span style="font-size: larger;font-weight: bolder;color: red;">DISCLAIMER:  </span>Sorry, I didn't have time to add a quantity counter for duplicate items, a drop down for that either, and i didn't have time either to make an "edit this item" thing, but please enjoy the remove feature and the calculations function.
+                    I also demand sovereignty over my body and mind and time
+                    </p>
+                    <svg width="25" height="25">
+                        <path/>
+                    </svg>
+                </article>
+            </div>
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Custom Logo</th>
+                        <th>Price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+
+                        <td id="color-box">
+                            <div></div>
+                        </td> <!--color-->
+
+                        <td></td>
+                        <td></td>
+
+                        <td id="remove-button">
+                            <svg height="30" width="30">
+                                <path/>
+                            </svg>
+                        </td> <!--remove-->
+
+                    </tr>
+                    
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <div>
+                                <div>Sum Prices:</div><div id="sum-of-items" >0.00$USD</div>
+                                <div>Applied Discounts:</div><div id="discounts" >CODE</div>
+                                <div>Deductions:</div><div id="deductions" >-0.00$USD</div>
+                                <div>Total:</div><div id="final-sum" >0.00$USD</div>
+                            </div>
+                            <section>
+                                <button>
+                                    PROCEED TO PAYMENT
+                                </button>
+                            </section>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
         
         <!--Leave this out, this is a separate and universal container, followed by the eventual addition of -->
         <div class="user-profile">
@@ -40,12 +134,43 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
+        let cartGetter = () => { return localStorage.getItem("cart-storage")};
+        let itemGetter = () => { return localStorage.getItem("selected-shop-item-object")};
+        let shopObjectGetter = () => { return localStorage.getItem("global-shop-item-objects")};
+        function cartSetter(item) { //stores all the objects in the pendingObjectOverrides constant or something like that            
+            let cartCache = JSON.parse(cartGetter());
+            cartCache.push(item);
+            localStorage.setItem("cart-storage", JSON.stringify(cartCache));
+        }
+        function cartRemover(index) {
+            let cartCache = JSON.parse(cartGetter());
+            let newCart = new Array;
+            for (item of cartCache) { //lining up your crosshairs on the position of the target
+                let {["id"]: idx} = item;
+                if (idx == index) {
+                    continue; //leave the target to wither and die
+                } else {
+                    newCart.push(item); //add the cool kids to the club :D
+                }
+            }
+            localStorage.setItem("cart-storage", JSON.stringify(newCart));
+        }
+
+        const table = document.querySelector("#summary-table")
+        const tableBody = table.querySelector("tbody")
+
+        const stickyAlert = document.querySelector("#sticky-alert")
+        stickyAlert.querySelector("article > svg").addEventListener("click", function () {
+            stickyAlert.remove()
+        })
+
         // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
         let navCont = document.getElementById("side-nav");
         let contextCont = document.getElementById("context");
         let userProfileButton = document.querySelector("#user-profile-icon")
         let maxWidth = navCont.offsetWidth;
         let minWidth = maxWidth - contextCont.offsetWidth;
+        const topNav = document.querySelector("#top-nav").children;
 
 
         let animTimeAxis = minWidth; //most right digit is ALWAYS the miliseconds in hundrenths, other digits are seconds, when theres only 1 digit, its 0 seconds + N hundred miliseconds
@@ -59,6 +184,10 @@
             "shop-image-button" : [document.getElementById("shop-image-button"), "../shop/shop.html", createContextContent("<b>Shop</b> <br> Take a look around our small shoplet!")]
         }
 
+        const topNavObjects = {
+            //for later topNav content
+        }
+
         function clamp(value, min, max) {
             if (min != null && value < min) {
                 return min;
@@ -68,6 +197,87 @@
             }
             return value;
         }
+
+        function removeFromCart(event) {
+            let buttonParent = event.currentTarget.parentNode.parentNode; //this gets the tr parent element that has a child that is this particular remove button
+            let cartIdx = buttonParent.id;
+            buttonParent.remove() //removes the physical one (frontend)
+            cartRemover(index=cartIdx)
+
+        }
+
+        function initialiseGeneralItems() { // this function is designed to initialise the empty slate of a table with all the unique items
+            let pendingItems = JSON.parse(cartGetter());
+            let regularField = tableBody.querySelector("tr > td")
+            let colorField = tableBody.querySelector("tr > #color-box");
+            let removeField = tableBody.querySelector("tr > #remove-button");
+
+            
+            for (let x = 0; x < pendingItems.length; x++) {
+                let colorCopy = colorField.cloneNode(true);
+                let removeCopy = removeField.cloneNode(true);
+                let row = tableBody.insertRow(0);
+                let currentItem = pendingItems[x];
+                let {id, name, color, logo, price} = currentItem;
+                row.id = id;
+                console.log(id);
+                let toDo = [name, color, logo, price, "remove"]
+                for (let i = 0; i < toDo.length; i++) {
+                    let regularCopy = regularField.cloneNode(true);
+                    if (toDo[i] == color) {
+                        colorCopy.querySelector("div").style.backgroundColor = JSON.parse(color);
+                        row.appendChild(colorCopy);
+                        console.log(color)
+                    } else if (toDo[i] === "remove") {
+                        removeCopy.querySelector("svg").addEventListener("click", removeFromCart);
+                        row.appendChild(removeCopy);
+                    } else if (toDo[i] == logo) {
+                        if (JSON.stringify(logo) == "false") {
+                            regularCopy.innerHTML = "Non was chosen";
+                            row.appendChild(regularCopy);
+                        } else if (JSON.stringify(logo) == "true") {
+                            regularCopy.innerHTML = "Picked out by customer";
+                            row.appendChild(regularCopy);
+                        }
+                    } else if (toDo[i] == price) {
+                        regularCopy.innerHTML = `${price} $USD`;
+                        row.appendChild(regularCopy);
+
+                    } else {
+                        regularCopy.innerHTML = toDo[i];
+                        row.appendChild(regularCopy);
+                    }
+                }
+                
+
+            }
+            tableBody.children[tableBody.children.length - 1].remove();
+
+            // here we should clean up the mess and initialise the sum of the prices all in one function here, at the same time instead of disjointedly
+            // we also want to re-initialise the prices whenever the table is modified, so maybe i'll make a sub function that runs here, and add an eventlisnter to the 
+            // table's body itself
+
+
+        }
+
+        function initPrices() {
+            let sumLabel = document.querySelector("#sum-of-items");
+            let discountsLabel = document.querySelector("#discounts");
+            let deductLabel = document.querySelector("#deductions");
+            let finalSumLabel = document.querySelector("#final-sum");
+
+            let sumPrice = 0;
+            for (item of JSON.parse(cartGetter())) {
+                let {price} = item;
+                sumPrice += price;
+            }
+
+            sumLabel.innerHTML = `${sumPrice} $USD`
+
+        }
+
+        initialiseGeneralItems();
+        initPrices();
 
         function createContextContent(title, description) {
             let contextMenuContent = {
@@ -98,6 +308,73 @@
             }
                 
         }
+
+
+        function topNavResponse(event) {
+            let evTarget = event.currentTarget.parentNode.id;
+
+            if (evTarget !== "cart") {
+                let text = document.querySelector(`#${evTarget} > div > p`);
+
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {fontSize: "15px"},
+                            {fontSize: "20px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {fontSize: "20px"},
+                            {fontSize: "15px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "click") {
+                    alert("This is the secondary nav bar, its currently missing the dropdown")
+                }
+            } else {
+                let text = document.querySelector(`#${evTarget} > div > svg`);
+
+                if (event.type == "mouseenter") {
+                    text.animate(
+                        [
+                            {width: "35px", height: "35px"},
+                            {width: "50px", height: "50px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                } else if (event.type == "mouseout") {
+                    text.animate(
+                        [
+                            {width: "50px", height: "50px"},
+                            {width: "35px", height: "35px"}
+
+                        ],
+                        {
+                            fill: "both",
+                            duration:  200
+                        }
+                    )
+                }
+            }
+        }
+
+        
         for (const element in elementObjects) { //(any declarations;, condition for the loop to keep going;, alter anything to make sure the loop may end;) OR (const blockVar in Matrix)
             let EL = elementObjects[element][0];
             EL.addEventListener("click", moveContext); //APPARENTLY, CALLING A FUNCTION LIKE THIS IS JUST "REFERENCING IT", DON'T DO moveContext(event) OR YOU WOULD BE CALLING IT WITHOUT PARAMETERS IMMEDIATELY APPARENTLY ToT
@@ -106,6 +383,21 @@
 
         }
 
+        for (let i = 0; i < topNav.length; i++) {
+            let topNavChild = document.querySelector(`#${topNav[i].id} > div`);
+            topNavChild.addEventListener("click", topNavResponse);
+            topNavChild.addEventListener("mouseenter", topNavResponse);
+            topNavChild.addEventListener("mouseout", topNavResponse);
+            
+        }
+
+        // setInterval(() => {
+        //     for (box of tableBody.children) {
+        //         box.innerHTML += `Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`
+        //     }
+        // }, 2000)
+
+        
         setInterval(() => { //this will be my defacto update cycle asynch function
 
             // context.innerText = elementObjects[String(currContext)][2];

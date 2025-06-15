@@ -123,13 +123,15 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
-        let cartGetter = localStorage.getItem("cart-storage");
-        let itemGetter = localStorage.getItem("selected-shop-item-object");
+        localStorage.setItem("cart-storage", `[]`)
+        let cartGetter = () => { return localStorage.getItem("cart-storage")}; //(() => {})() means that it is executed immediately and cannot be executed when called again, () => {} means you need to call it to receive a value every time
+        let itemGetter = () => { return localStorage.getItem("selected-shop-item-object")};
         let shopObjectGetter = localStorage.getItem("global-shop-item-objects")
         
-        function cartSetter(cache) { //stores all the objects in the pendingObjectOverrides constant or something like that
-            let stringCache = JSON.stringify(cache);
-            localStorage.setItem("cart-storage", stringCache);
+        function cartSetter(item) { //stores all the objects in the pendingObjectOverrides constant or something like that            
+            let cartCache = JSON.parse(cartGetter());
+            cartCache.push(item);
+            localStorage.setItem("cart-storage", JSON.stringify(cartCache));
         }
 
         function itemSetter(item) { //stores a single id/name of the object that you can find in the cartStorage
@@ -344,11 +346,10 @@
 
             }
 
-            let cartCache = new Array();
             //in the same case, give all the root containers an eventlistener
             for (let i = 0; i < wardrobe.children.length; i++) {
-                let childNode = wardrobe.children[i];
-                let button = childNode.querySelector("button");
+                let childNode = wardrobe.children[i]; //items in wardrobe
+                let button = childNode.querySelector("button"); //add to cart button
                 childNode.addEventListener("click", (event) => {
                     event.stopPropagation();
                     let shopItem = event.currentTarget.id;
@@ -362,13 +363,36 @@
                 button.addEventListener("click", (event) => {
                     event.stopPropagation();
                     let parent = event.currentTarget.parentNode.id;
-                    //now that we have the parent id which IS in the html DOM
-                    // we are to store important data in a library about the product into the cartStorage
-                    if (!cartCache.includes(parent)) { //checks if the cartStorage already contains this shit
-                        cartCache.push(parent);
-                        cartSetter(cartCache); //reinitialises the cartStorage with the cartCache 
+                    let itemID = `idx${(() => {
+                        let newIndex = JSON.parse(cartGetter()).length + 1
+                        return newIndex;
+
+                    })()}`
+                    let colorundprice = (() => {
+
+                        for (let x of JSON.parse(shopObjectGetter)) {
+                            let {["name"]: name=null, ["colors"]: clr=null, ["price"]: price=null} = x;
+                            if (name === parent) {
+                                return [clr[0], price];
+                            }
+                        }
+
+                    })()
+                    let [color, price] = colorundprice
+
+
+                    let dictRef = {
+                        "id" : itemID,
+                        "name" : parent,
+                        "color" : color, 
+                        "logo" : false,
+                        "price" : price
 
                     }
+                    //now that we have the parent id which IS in the html DOM
+                    // we are to store important data in a library about the product into the cartStorage
+                    cartSetter(dictRef);
+
                 })
             }
         }

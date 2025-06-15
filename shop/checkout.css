@@ -1,6 +1,8 @@
 body {
     margin: 0%;
     font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(194, 194, 194);
+
 
     &::-webkit-scrollbar { 
         display: none;
@@ -8,7 +10,9 @@ body {
 }
 
 :root {
-    --widthOfSideNav: 8vw; /*the start of the scrollbar is considered the end of the viewport, remove it to reveal 100vw for your workspace, keep it to have like <100vw for yourself*/
+    --widthOfSideNav: 8%; 
+    /*the start of the scrollbar is considered the end of the viewport, remove it to reveal 100vw for your workspace, keep it to have like <100vw for yourself*/
+    --heighOfTopNav: 10%;
 }
 
 div.side-nav {
@@ -57,13 +61,285 @@ div.side-nav {
     display: flex;
     flex-wrap: wrap;
     position: absolute;
-    top: 0px;
+    top: calc(var(--heighOfTopNav) + 2%);
     left: var(--widthOfSideNav); /*artifically centered the div*/
     width: calc(100vw - var(--widthOfSideNav));
-    height: 100%;
+    max-width: calc(100vw - var(--widthOfSideNav));
+    height: fit-content;
     justify-self: center;
     z-index: 0;
-    overflow-x: auto; /* Checks safely and gently for overflow in the x-direction*/
+
+    & > div.sub-main {
+
+        min-width: 350px;
+        background-color: transparent;
+        width: 100%;
+        height: auto;
+        justify-items: center;
+        position: relative;
+
+        & > div#sticky-alert {
+            position: fixed;
+            bottom: 5%;
+            width: 100%;
+            height: fit-content;
+            justify-items: center;
+            max-height: 100px;
+
+            & > article {
+                display: flex;
+                padding: 5px;
+                width: 60%;
+                height: auto;
+                background-color: #bbffc3;
+                text-align: center;
+                justify-content: space-between;
+
+                & > p {
+                    flex-grow: 0.8; /*if you tell only one element to flexgrow, it will take up all the other space avaliable*/
+                    flex-basis: 80%;
+                    font-size: clamp(10px, 1vw, 20px);
+                    justify-self: center;
+                }
+
+                & > svg {
+                    cursor: pointer;
+
+                    & path {
+                        d: path("M5 24L24 5M5 5L24 24");
+                        stroke-width: 2px;
+                        stroke: black;
+                        stroke-linecap: round;
+                    }
+                }
+            }
+
+        }
+
+        & > table#summary-table {
+            table-layout: fixed;
+            width: 80%;
+            min-height: 20px;
+            height: fit-content;
+            box-sizing: border-box;
+            border-spacing: 0;
+
+            & > thead {
+                height: fit-content;
+                background-color: aliceblue;
+
+                & th {
+                    border: 1px solid black;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    
+                    &:first-child {
+                        border-top-left-radius: 20px;
+                    }
+                    
+                    &:last-child {
+                        border-top-right-radius: 20px;
+                    }
+
+                    &:nth-of-type(1) {
+                        width: 40%;
+                    }
+
+                    &:nth-of-type(2) { /*colors*/
+                        width: 15%;
+                        & > div {
+                            width: 20px;
+                            height: 20px;
+                            background-color: rgb(215, 229, 250);
+                        }
+                    }
+
+                    &:nth-of-type(3) {
+                        width: 15%;
+                    }
+
+                    &:nth-of-type(4) {
+                        width: 25%;
+                    }
+
+                    &:nth-of-type(5) { /*remove*/
+                        width: 5%;
+                    }
+                }
+            }
+
+            & > tbody {
+                height: fit-content;
+                background-color: rgb(255, 255, 255);
+
+                & td {
+                    text-align: center;
+                    border: 1px solid black;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    height: fit-content;
+
+                    &:nth-of-type(2) { /*colors*/
+                        justify-items: center;
+
+                        & > div {
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 100%;
+                            background-color: rgb(215, 229, 250);
+                        }
+                    }
+
+                    &:nth-of-type(5) { /*remove*/
+                        padding: 0;
+                        & > svg {
+                            border-radius: 100%;
+                            background-color: rgb(255, 255, 255);
+                            padding: 0;
+                            cursor: pointer;
+
+                            & path {
+                                d: path("M5 24L24 5M5 5L24 24");
+                                stroke-width: 2px;
+                                stroke: black;
+                                stroke-linecap: round;
+                                transition: stroke 200ms, stroke-width 200ms;
+                            }
+
+                            &:hover path {
+                                stroke: red;
+                                stroke-width: 3px;
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            & > tfoot {
+                height: fit-content;
+                background-color: aliceblue;
+
+                & td {
+                    border: 1px solid black;
+                    padding: 30px;
+                    box-sizing: border-box;
+                    border-bottom-right-radius: 20px;
+                    border-bottom-left-radius: 20px;
+                    justify-items: right;
+                    
+                    & > div {
+                        display: grid;
+                        width: 30%;
+                        gap: 10px;
+                        grid-template-columns: 1fr 1fr;
+                        grid-template-rows: 1fr 1fr 1fr;
+
+                        & > div {
+                            &:nth-of-type(2n-1) {
+                                font-weight: bolder;
+                                font-size: 15px;
+                            }
+
+                            &:nth-of-type(2n) {
+                                font-style: italic;
+                            }
+                        }
+
+                    }
+
+                    & > section {
+                        width: 100%;
+                        justify-items: center;
+                        
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    & > header.top-nav {
+        width: calc(100% - var(--widthOfSideNav));
+        max-width: calc(100% - var(--widthOfSideNav));
+        box-sizing: border-box;
+        height: var(--heighOfTopNav);
+        background-color: #ffffff;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.9), 0 3px 10px rgba(0,0,0,0.7);
+        display: flex;
+        gap: 0px;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+
+        --leftRightmargins: 10px;
+
+        & > article {
+            width: 30vw;
+        }
+
+        & > section {
+            align-content: center;
+            display: flex;
+            column-gap: 10px;
+            justify-content: center;
+            margin: 10px 0px 10px 0px;
+            width: 20vw;
+
+            &:not(:last-child) {
+                border-right: 1px solid black;
+            }
+
+            & > div {
+                pointer-events: all;
+                cursor: pointer;
+                display: flex;
+                column-gap: 30px;
+                height: auto;
+                padding: 0 20px 0 20px;
+                justify-content: space-evenly;
+                z-index: 10;
+
+
+                & > svg {
+                    width: 20px;
+                    height: 20px;
+                    align-self: center;
+                    fill: none;
+                    pointer-events: none;
+                
+
+                    & > path {
+                        d: path("M3 8L10.3415 14.4238C10.7185 14.7537 11.2815 14.7537 11.6585 14.4238L19 8");
+                        stroke: black;
+                        stroke-width: 2px;
+                        stroke-linecap: round;
+                        fill: none;
+                    }
+
+                    & > path.shopping-cart {
+                        d: path("M14.2061 12.3135L15.0605 14.4404H48.8086L48.627 15.0771L44.8047 28.501L44.7012 28.8643H42.4287C43.562 29.4995 44.3232 30.677 44.3232 32.0254C44.3232 34.0473 42.6121 35.6864 40.501 35.6865C38.3898 35.6865 36.6777 34.0473 36.6777 32.0254C36.6778 30.6769 37.4399 29.4995 38.5732 28.8643H27.1377C28.2711 29.4995 29.0332 30.6769 29.0332 32.0254C29.0332 34.0473 27.3212 35.6865 25.21 35.6865C23.0989 35.6864 21.3877 34.0472 21.3877 32.0254C21.3877 30.6771 22.149 29.4995 23.2822 28.8643H19.7754L19.6494 28.5508L18.9697 26.8584H18.8398V26.5342L14.2588 15.127L13.4043 13H1V12H14.0801L14.2061 12.3135ZM20.4512 27.8643H21.1318L21.0332 26.8584H20.0469L20.4512 27.8643ZM21.6348 27.8643H24.96V26.8584H21.5361L21.6348 27.8643ZM25.46 27.8643H30.0566V26.8584H25.46V27.8643ZM30.5566 27.8643H35.1543V26.8584H30.5566V27.8643ZM35.6543 27.8643H40.251V26.8584H35.6543V27.8643ZM40.751 27.8643H43.9463L44.1455 27.1631L44.1758 26.8584H40.751V27.8643ZM19.8467 26.3584H20.9844L20.6514 22.9688H18.4854L19.8467 26.3584ZM21.4873 26.3584H24.96V22.9688H21.1543L21.4873 26.3584ZM25.46 26.3584H30.0566V22.9688H25.46V26.3584ZM30.5566 26.3584H35.1543V22.9688H30.5566V26.3584ZM35.6543 26.3584H40.251V22.9688H35.6543V26.3584ZM40.751 26.3584H44.2246L44.5576 22.9688H40.751V26.3584ZM44.9111 24.4727L45.3398 22.9688H45.0596L44.9111 24.4727ZM18.2842 22.4688H20.6016L20.2686 19.0781H16.9229L18.2842 22.4688ZM21.1045 22.4688H24.96V19.0781H20.7715L21.1045 22.4688ZM25.46 22.4688H30.0566V19.0781H25.46V22.4688ZM30.5566 22.4688H35.1543V19.0781H30.5566V22.4688ZM35.6543 22.4688H40.251V19.0781H35.6543V22.4688ZM40.751 22.4688H44.6064L44.9395 19.0781H40.751V22.4688ZM45.1094 22.4688H45.4824L46.4473 19.0781H45.4424L45.1094 22.4688ZM16.7217 18.5781H20.2197L19.9111 15.4404H15.4619L16.7217 18.5781ZM20.7227 18.5781H24.96V15.4404H20.4141L20.7227 18.5781ZM25.46 18.5781H30.0566V15.4404H25.46V18.5781ZM30.5566 18.5781H35.1543V15.4404H30.5566V18.5781ZM35.6543 18.5781H40.251V15.4404H35.6543V18.5781ZM40.751 18.5781H44.9883L45.2969 15.4404H40.751V18.5781ZM45.4912 18.5781H46.5898L47.4834 15.4404H45.7998L45.4912 18.5781Z");
+                        fill: black;
+                    }
+                }
+
+                & > p {
+                    font-size: 15px;
+                    width: max-content;
+                    pointer-events: none;
+                    user-select: none;
+                }
+
+                
+            }
+            
+        }
+
+    }
 
 }
 
@@ -98,7 +374,8 @@ div.side-nav {
     right: 1%;
     padding: 10px;
     width: 80px;
-    height: 80px;  
+    height: 80px;
+    z-index: 100; 
 
     & > #user-profile-icon {
         width: 100%;
@@ -141,4 +418,21 @@ div.side-nav {
 @keyframes reverse-fadetwo {
     from {opacity: 1; box-shadow: 0 5px 10px 0 rgba(0,0,0, 0.5);}
     to {opacity: 0.5;}
+}
+
+@keyframes type-textFadein {
+    0% {opacity: 0; left: -20px; padding-left: 0; font-weight: bold;}
+    80% {opacity: 0.7;}
+    100% {opacity: 1; left: 0px; padding-left: 20px; font-weight: bold;}
+}
+
+/*FOR MULTIPLE COLOR BUTTON CHOICES*/
+@keyframes toggleOn {
+    from {}
+    to {opacity: 1; box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.584);}
+} 
+
+@keyframes toggleOff {
+    from {}
+    to {opacity: 0.5; box-shadow: 0 0 0 0;}
 }

@@ -74,23 +74,41 @@
                 <section id="info-section">
                     <div id="name">NAME</div>
                     <div id="materials">MATERIALS</div>
-                    <div id="type">TYPE<div>twet</div></div>
+                    <div id="type">TYPE<div>TWAT</div></div>
                     <div id="colors">
-                        Pick A Style
+                        <span style="justify-self: start;">Pick A Style</span>
                         <div id="color-boxes">
-                            <div toggle-val="-1"></div>
+                            <div toggle-val="-1"></div> <!--color button reference node-->
+                            
+                        </div>
+                        <div id="mini-image">
+                            <img src="" alt="Load image here">
+                        </div>
+                        <div id="add-logo">
+                            <label>Upload your own custom print</label>
+                            <button onclick="filePicker()">Select File</button>
+                            <input id="checkbox" onclick="updateHUD({event})" type="checkbox"/>
+                            <p>Use this print? (+$50 surcharge)</p>
                         </div>
                     </div>
                     <div id="price">
                         <div id="defacto"></div>
-                        <div id="additional">additional</div>
                     </div>
-                    <div id="quantity">QUANTITIES</div>
+                    <div id="quantity">
+                        <div id="quantity-counter">
+                            <div id="-" onclick="addQty(event)">-</div>
+                            <p>1</p>
+                            <div id="+" onclick="addQty(event)">+</div>
+                        </div>
+                    </div>
                     <div id="add-to-cart">
-                        <button onclick="" onmouseenter="">
+                        <button id="handle" onclick="addToCart(event)">
                             Add to Cart
                             <div></div>
                         </button>
+                        <div id="warning-label">
+                            warnings go here
+                        </div>
                     </div>
                 </section>
             </div>
@@ -105,14 +123,36 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
+        let globalCheckbox = document.querySelector("#checkbox")
+        let imgURL; 
+        let cartGetter = () => { return localStorage.getItem("cart-storage")};
+        let itemGetter = () => { return localStorage.getItem("selected-shop-item-object")};
+        let shopObjectGetter = () => { return localStorage.getItem("global-shop-item-objects")};
+        let styles = (() => {
+            let name = itemGetter();
+            let objects = JSON.parse(shopObjectGetter());
+            for (let x = 0; x < objects.length; x++) {
+                let {["name"]: objname, ["colors"]: colors} = objects[x];
+                if (JSON.stringify(objname) === name) {
+                    return colors;
+                }
+            }
+        })();
+        let sumPrice = (() => {
+            let name = itemGetter();
+            let objects = JSON.parse(shopObjectGetter());
+            for (let x = 0; x < objects.length; x++) {
+                let {["name"]: objname, ["price"]: price} = objects[x];
+                if (JSON.stringify(objname) === name) {
+                    return parseFloat(JSON.stringify(price));
+                }
+            }
+        })();
 
-        let cartGetter = localStorage.getItem("cart-storage");
-        let itemGetter = localStorage.getItem("selected-shop-item-object");
-        let shopObjectGetter = localStorage.getItem("global-shop-item-objects");
-
-        function cartSetter(cache) { //stores all the objects in the pendingObjectOverrides constant or something like that
-            let stringCache = JSON.stringify(cache);
-            localStorage.setItem("cart-storage", stringCache);
+        function cartSetter(item) { //stores all the objects in the pendingObjectOverrides constant or something like that            
+            let cartCache = JSON.parse(cartGetter());
+            cartCache.push(item);
+            localStorage.setItem("cart-storage", JSON.stringify(cartCache));
         }
 
         // IMPORTANT NOTE TO SELF: as it is now, this JS is the boiler plate
@@ -244,6 +284,77 @@
             }
         }
 
+        //global var for addQty
+        let qty = 1;
+        //---------------------
+
+        function addQty(event, max=null) {
+            let parent = event.currentTarget.parentNode;
+            let display = parent.querySelector("p");
+            let button = event.currentTarget
+            let index = Array.prototype.indexOf.call(parent.children, button);
+            if (index === 0) {
+                qty = clamp(qty - 1, 0, max);
+            } else {
+                qty = clamp(qty + 1, 0, max);
+            }
+
+            display.innerHTML = qty;
+            updateHUD()
+        }
+
+        function updateHUD({["event"]: ev1, ["ev"]: ev2} = {}) { // doing = {} is much safer as it takes any object now, meaning your args can be as plentiful as you want
+            let ev = ev1 ?? ev2 ?? null;
+            let totalPrice = document.querySelector("#defacto");
+            let colorButtons = document.querySelector("#color-boxes")
+            let targetID;
+            if (ev) {
+                targetID = ev.currentTarget.id;
+            } else {
+                targetID = null
+            }
+            let sumSurcharge = 0;
+            // we take the original charge and add it on top of everything before outputting it
+            let originalCharge = (() => {
+                let name = itemGetter();
+                let allObjects = JSON.parse(shopObjectGetter());
+                for (let x = 0; x < allObjects.length; x++) {
+                    let {["name"]: objname, ["price"]: price} = allObjects[x];
+                    objname = JSON.stringify(objname) // was returning "hidden characters" in its non quotations form
+                    if (objname === name) {
+                        return parseFloat(price)
+                    }
+                }
+
+            })()
+            for (button of colorButtons.children) {
+                if (button.getAttribute("toggle-val") == 1) {
+                    let multiplier = Array.from(colorButtons.children).indexOf(button) + 1;
+                    
+                    sumSurcharge += 10 * multiplier;
+
+                }
+            }
+
+            // these just primarily check for what called it
+            if (targetID === "checkbox" || globalCheckbox.checked) {
+                console.log("yeah its checked")
+                let logo = document.querySelector("#mini-image > img")
+                if (logo.getAttribute("src") && globalCheckbox.checked) {
+                    sumSurcharge += 50
+                } else {
+                    sumSurcharge = clamp(sumSurcharge -= 50, 0, null)
+                }
+
+            }
+
+            sumPrice = (sumSurcharge + originalCharge)
+            totalPrice.innerHTML = `${((sumSurcharge + originalCharge) * qty).toFixed(2)} $USD`
+
+
+        }
+
+
         function colorButtonResponse(event) {
             let button = event.currentTarget;
             let toggleState = parseInt(button.getAttribute("toggle-val"));
@@ -256,7 +367,7 @@
                 for (let x of button.parentNode.children) { //checks if the other buttons are toggled
                     if (x.getAttribute("toggle-val") > 0 && x !== this) { //this is assuming that there are other buttons that are toggled already
                         x.setAttribute("toggle-val", -1); //force deactivates the button
-                        x.style.animationName = "toggleOff"
+                        x.style.animationName = "toggleOff";
                     }
                 }
                 button.setAttribute("toggle-val", toggleState*-1);
@@ -271,12 +382,136 @@
                         console.log(x.getAttribute("toggle-val"))
                     }
                 })()
+
+                updateHUD({buttons: button.parentNode.children});
+
             }
         }
 
-        function updateSelectedColor() {
+        function addToCart(ev) {
+            let imgDisplay = (() => { //returns a truthy, meaning if the string in src is empty, it returns false, otherwise, a true
+                let a = document.querySelector("#mini-image > img").getAttribute("src")
+                console.log(a)
+                if (a) {
+                    return true
+                } else {
+                    return false
+                }
+            })()
+            console.log(`imgdisplay: ${imgDisplay}`)
+            let checkBox = document.querySelector("#add-logo > input[type='checkbox']").checked; //returns true or false
+            let colorField = document.querySelector("#color-boxes");
+            let warningField = document.querySelector("#warning-label");
+            let button = ev.currentTarget;
+            let name = JSON.parse(itemGetter()) ?? null;
+            let color = (() => {
+                for (let i = 0; i < colorField.children.length; i++) {
+                    if (colorField.children[i].getAttribute("toggle-val") > 0) {
+                        let css = window.getComputedStyle(colorField.children[i])
+                        return JSON.stringify(css.getPropertyValue("background-color"));
+                    }
+                }
+            })() ?? null;
+
+
+            function appendCart() {
+                for (let x = 0; x < qty; x++) {
+                    let itemID = `idx${(() => {
+                        let newIndex = JSON.parse(cartGetter()).length + 1
+                        return newIndex;
+
+                    })()}`
+
+                    let objRef = {
+                        "id" : itemID,
+                        "name" : name,
+                        "color" : color,
+                        "logo" : checkBox,
+                        "price" : sumPrice
+                    }
+                    cartSetter(objRef);
+                }
+            }
+
+
+            //if you add to cart without selecting a color or a quantity, it will let you know
+            if (color && qty > 0) {
+                // if all is right with color and qty, then check for the logo
+                if (checkBox) {
+                    if (imgDisplay) {
+                        warningField.innerHTML = ""
+                        console.log(qty)
+                        appendCart();
+                    } else {
+                        warningField.style.color = `red`
+                        warningField.innerHTML = `If you wanna use a logo, you must upload an image first`
+                    }
+                    
+                } else {
+                    warningField.innerHTML = ""
+                    console.log(qty)
+                    appendCart();
+                }
+            } else {
+                //error checker
+                if (!color && qty == 0) {
+                    warningField.style.color = `red`
+                    warningField.innerHTML = `Quantity must be non zero and please select a color`
+                } else if (!color) {
+                    warningField.style.color = `yellow`
+                    warningField.innerHTML = `Please select an avaliable color`
+                } else if (qty == 0) {
+                    warningField.style.color = `yellow`
+                    warningField.innerHTML = `Please choose a non zero quantities`
+                }
+            }
+            
+            //add item into cart with {name, color, logoBool} as set WHEN the ATC is pressed...
+            // if color is NOT decided, tell the user "You must select an avaliable color"
+            // to add item to cart with working quantity, use a for loop where 'qty' is in 'for (let i = 0; i < qty; i++)'
+            
+            //derive name from object selected, if non, return null, and check for null
+            //derive color from whichever button is of toggle-val == 1
+            //derive the logo bool from the checkbox
             
         }
+
+        async function filePicker() {
+            let logoDisplay = document.querySelector("#mini-image > img")
+
+            // await simply stops this function's execution until the promise after await is resolved, 'await' gives the variable that wants it the resolve value of that promise (once it's been settled)
+            const pickerOpts = {
+                types: [
+                    {
+                        description: "Images",
+                        accept: {
+                            "image/jpeg": [".jpg",".jpeg"],
+                            "image/png": [".png"]
+                        }
+                    }
+                ],
+                excludeAcceptAllOption: true,
+                multiple: false
+            };
+            try {
+                const [fileHandler] = await window.showOpenFilePicker(pickerOpts); // window.showOpenFilePicker() IS a function, it returns an unresolved promise
+                const file = await fileHandler.getFile();
+
+                if (["image/png","image/jpeg","image/jpg"].includes(file.type)) {
+                    imgURL = URL.createObjectURL(file);
+                    logoDisplay.src = imgURL
+
+                } else {
+                    return
+                }
+            
+            } catch (error) {
+                console.log("no file was selected when the window was closed")
+            }
+            
+             
+        }
+
 
         function initialiseFields() {
             let nameField = document.querySelector("#name");
@@ -288,8 +523,8 @@
             let colorBoxCopy = document.querySelector("#color-boxes > div");
             colorsField.removeChild(colorsField.children[0]);
 
-            let objects = JSON.parse(shopObjectGetter);
-            let selectedItem = JSON.parse(itemGetter);
+            let objects = JSON.parse(shopObjectGetter());
+            let selectedItem = JSON.parse(itemGetter());
             let selectedObjProperties;
 
             for (let i = 0; i < objects.length; i++) { //just searching the lookup table for the selected object, and loading in its properties
@@ -335,6 +570,7 @@
 
             nameField.innerHTML = name;
             console.log(typeField);
+            ///
 
 
         }
@@ -361,6 +597,11 @@
 
             // context.innerText = elementObjects[String(currContext)][2];
             context.style.left = String(animTimeAxis + "px");
+            if (imgURL) {
+                globalCheckbox.disabled = false
+            } else {
+                globalCheckbox.disabled = true
+            }
             
         }, 10);
 
