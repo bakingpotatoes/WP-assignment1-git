@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
+    <title>Welcome to the Shoplet :D</title>
     <link rel="stylesheet" href="./shop.css">
 </head>
 <body>
@@ -123,7 +123,11 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
-        localStorage.setItem("cart-storage", `[]`)
+        try {
+            let test = localStorage.getItem("cart-storage")
+        } catch (err) {
+            localStorage.setItem("cart-storage", `[]`) // do not execute this if its already set
+        }
         let cartGetter = () => { return localStorage.getItem("cart-storage")}; //(() => {})() means that it is executed immediately and cannot be executed when called again, () => {} means you need to call it to receive a value every time
         let itemGetter = () => { return localStorage.getItem("selected-shop-item-object")};
         let shopObjectGetter = localStorage.getItem("global-shop-item-objects")
@@ -373,7 +377,9 @@
                         for (let x of JSON.parse(shopObjectGetter)) {
                             let {["name"]: name=null, ["colors"]: clr=null, ["price"]: price=null} = x;
                             if (name === parent) {
-                                return [clr[0], price];
+                                let dC = clr[0];
+                                let rgbaFormat = JSON.stringify(`rgba(${dC[0]},${dC[1]},${dC[2]},${dC[3]})`);
+                                return [rgbaFormat, price];
                             }
                         }
 

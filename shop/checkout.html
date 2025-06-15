@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
+    <title>Cart / Checkout оформление заказа</title>
     <link rel="stylesheet" href="./checkout.css">
 </head>
 <body>
@@ -67,7 +67,7 @@
         <div class="sub-main">
             <div id="sticky-alert">
                 <article>
-                    <p> <span style="font-size: larger;font-weight: bolder;color: red;">DISCLAIMER:  </span>Sorry, I didn't have time to add a quantity counter for duplicate items, a drop down for that either, and i didn't have time either to make an "edit this item" thing, but please enjoy the remove feature and the calculations function.
+                    <p> <span style="font-size: larger;font-weight: bolder;color: red;">DISCLAIMER:  </span>Sorry, I didn't have time to add a quantity counter for duplicate items, a drop down for that either, and i didn't have time either to make an "edit this item" thing, nor an image for the clothes you bought, but please enjoy the remove feature and the calculations function.
                     I also demand sovereignty over my body and mind and time
                     </p>
                     <svg width="25" height="25">
@@ -110,12 +110,24 @@
                         <td colspan="5">
                             <div>
                                 <div>Sum Prices:</div><div id="sum-of-items" >0.00$USD</div>
-                                <div>Applied Discounts:</div><div id="discounts" >CODE</div>
+                                <!---->
+                                <div>Applied Discounts:</div><div id="discounts" >
+                                    <select style="width: 10vw;" name="discount-interface" id="discount-interface" onchange="calculateTotal()">
+                                        <option selected>Select a discount :3</option>
+                                        <option value="discount-auto1" discount-amount="10"></option> <!--to add an auto discount just add it here like this, add the discount-amount too, so simple even a neanderthal can do it-->
+                                        <option value="discount-auto2" discount-amount="25"></option>
+                                        <option value="discount-auto3" discount-amount="50"></option>
+                                        <option value="discount-auto3" discount-amount="80"></option>
+                                        <option value="discount-auto3" discount-amount="1000"></option>
+                                    </select>
+                                    <div id="discount-notification">Discount avaliable!</div>
+                                </div>
+                                <!---->
                                 <div>Deductions:</div><div id="deductions" >-0.00$USD</div>
                                 <div>Total:</div><div id="final-sum" >0.00$USD</div>
                             </div>
                             <section>
-                                <button>
+                                <button onclick="totalPayment()">
                                     PROCEED TO PAYMENT
                                 </button>
                             </section>
@@ -134,6 +146,21 @@
 <!-- JAVASCRIPT -->
 
     <script type="text/javascript">
+        let totalPrice = 0;
+        const subMainBody = document.querySelector(".sub-main");
+        const discountInterface = document.querySelector("#discount-interface");
+        const discountNotification = document.querySelector("#discount-notification");
+
+        // disable all the discount options initially by default 
+        for (discount of discountInterface.children) {
+            let dA = discount.getAttribute("value");
+            if (dA != null || dA != undefined) {
+                discount.disabled = true;
+            } else {
+                continue
+            }
+        }
+
         let cartGetter = () => { return localStorage.getItem("cart-storage")};
         let itemGetter = () => { return localStorage.getItem("selected-shop-item-object")};
         let shopObjectGetter = () => { return localStorage.getItem("global-shop-item-objects")};
@@ -203,6 +230,7 @@
             let cartIdx = buttonParent.id;
             buttonParent.remove() //removes the physical one (frontend)
             cartRemover(index=cartIdx)
+            calculateTotal();
 
         }
 
@@ -260,7 +288,96 @@
 
         }
 
-        function initPrices() {
+        function checkDiscount({["price"]: price=null} = {}) {
+            discountNotification.style.visibility = "hidden"
+            let discountOptions = (() => {
+                let list = new Array;
+                for (x of discountInterface.children) {
+                    if (x.getAttribute("value")) { // returns false if null, doesn't discriminate
+                        list.push(x)
+                    }
+                }
+                return list;
+
+            })()
+            let lowest = 150;
+            let middle = ((multiplier=3) => { // multiplier is just a scale scalar
+                let inter = lowest * multiplier;
+                return inter;
+            })();
+            let highest = ((multiplier=5) => { // multiplier is just a scale scalar
+                let inter = lowest * multiplier;
+                return inter;
+            })();
+
+            let priceLimits = [lowest, middle, highest];
+            if (price) { // the whole initialisation part in this IF statement
+                for (let x = 0; x < discountOptions.length; x++) { // d means discounts
+                    if (x > priceLimits.length - 1) { //this checks if the number of avaliable auto discounts exceeds the number of price limits
+
+                        // standard protocol for checking price limits vs price itself
+                        let currPriceLimit = priceLimits[priceLimits.length - 1]; // only difference being that it takes the last price limit
+                        let currDiscountOption = discountOptions[x];
+                        currDiscountOption.innerHTML = `${currDiscountOption.getAttribute("discount-amount")}% discount (min spending of ${currPriceLimit} USD)` // this initialises the min spending requirement automatically
+
+                        if (price >= currPriceLimit) { //if this discount option doesn't meet its pre-assigned price limit, leave it, move on to the next one
+                            currDiscountOption.disabled = false;
+                        } else {
+                            currDiscountOption.disabled = true;
+                            if (currDiscountOption.selected) {
+                                currDiscountOption.selected = false;
+                            }
+                        }
+
+                    } else { //normal route
+
+                        // standard protocol for checking price limits vs price itself
+                        let currPriceLimit = priceLimits[x];
+                        let currDiscountOption = discountOptions[x];
+                        currDiscountOption.innerHTML = `${currDiscountOption.getAttribute("discount-amount")}% discount (min spending of ${currPriceLimit} USD)` // this initialises the min spending requirement automatically
+
+                        if (price >= currPriceLimit) { //if this discount option doesn't meet its pre-assigned price limit, leave it, move on to the next one
+                            currDiscountOption.disabled = false;
+                        } else {
+                            currDiscountOption.disabled = true;
+                            if (currDiscountOption.selected) {
+                                currDiscountOption.selected = false;
+                            }
+                        }
+
+                    }
+                }
+            } else { //in case price is null, which is a fallback protocol in case the programmer forgot to assign it a base price
+                return
+            }
+
+            //here i just check if there are any discounts not disabled
+            for (node of discountOptions) {
+                if (!node.disabled) {
+                    discountNotification.style.visibility = "visible";
+                    break
+                }
+            }
+
+
+            //under here, we deduct the amount and return the [deducted amount, new total]
+            let deductedAmount;
+            let newAmount = price;
+            for (discount of discountOptions) {
+                if (discount.selected) { // if discount was selected, we use that one's discount-amount
+                    deductedAmount = (price * (discount.getAttribute("discount-amount") / 100));
+                    newAmount = clamp((price - deductedAmount), 0, null);
+                } else {
+                    continue;
+                }
+            }
+
+
+            return [deductedAmount, newAmount]
+
+        }
+
+        function calculateTotal() {
             let sumLabel = document.querySelector("#sum-of-items");
             let discountsLabel = document.querySelector("#discounts");
             let deductLabel = document.querySelector("#deductions");
@@ -272,12 +389,20 @@
                 sumPrice += price;
             }
 
-            sumLabel.innerHTML = `${sumPrice} $USD`
+            // check if the customer is valid for discounts
+            let [deduct=0, newPrice=0] = checkDiscount({price: sumPrice}) ?? [0, 0]; //if each initially intended iterable is null, assume 0, if there is no iterable at all because the thing didn't execute since the cart is empty, just assume [0,0]
+            
+            totalPrice = newPrice;
+            
+            deductLabel.innerHTML = `${(-deduct).toFixed(2)} $USD`
+            sumLabel.innerHTML = `${sumPrice.toFixed(2)} $USD`
+            finalSumLabel.innerHTML = `${newPrice.toFixed(2)} $USD`
+
 
         }
 
         initialiseGeneralItems();
-        initPrices();
+        calculateTotal();
 
         function createContextContent(title, description) {
             let contextMenuContent = {
@@ -398,10 +523,20 @@
         // }, 2000)
 
         
+        function totalPayment() {
+            if (JSON.parse(cartGetter()).length > 0) {
+                alert(`Your total payment will be ${totalPrice.toFixed(2)} USD, thank you for shopping with us`);
+            } else {
+                alert("Your cart is still empty, maybe go back to the shop page and fill it up");
+            }
+        }
+
+        
         setInterval(() => { //this will be my defacto update cycle asynch function
 
             // context.innerText = elementObjects[String(currContext)][2];
             context.style.left = String(animTimeAxis + "px");
+            subMainBody.style.height = `${table.offsetHeight}px`;
             
         }, 10);
 
