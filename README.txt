@@ -4,7 +4,8 @@ I wrote 90% of my newest css with scss selectors unfortunately, I didn't realise
 ***DUE TO PAST EXPERIENCES, I'VE LINKED THIS ASSIGNMENT TO MY GITHUB ACCOUNT SO I CAN GO BACK ON PREVIOUS VERSIONS IN THE CASE SOMETHING TERRIBLE HAPPENS
 KINDLY IGNORE THE .gitatttributes and README.md, IT'S JUST FOR LOCAL VERSION CONTROLS***
 
-Kindly ignore the boilerplate folder, it was for my own use, there are no links to it...
+.gitignore is just to tell git commit to ignore the boilerplate and the .gitatttributes, .gitatttributes is not used at all, and no frontend frameworks were used during this assignment...
+FEEL FREE TO CHECK OUT MY GITHUB AT https://github.com/bakingpotatoes/WP-assignment1-git
 You may notice that there are some extra buttons that don't do anything, I added most just for the looks, it doesn't have anything to do with the core purpose of
 having buttons in this assignment...
 
