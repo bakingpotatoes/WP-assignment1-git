@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Me</title>
-    <link rel="stylesheet" href="./founder.css">
+    <link rel="stylesheet" href="./AboutMe.css">
 </head>
     <body>
         <div class="side-nav" id="side-nav">
@@ -32,12 +32,12 @@
             <header>
                 <div class="photo-catalog">
                     <section>
-                        <img src="../images/Untitled.png" alt="">
-                        <img src="../images/Untitled.png" alt="">
+                        <img src="../images/japan.jpg" alt="">
+                        <img src="../images/xavier.jpg" alt="">
                     </section>
                     <section>
-                        <img src="../images/Untitled.png" alt="">
-                        <img src="../images/Untitled.png" alt="">
+                        <img src="../images/ginger.JPG" alt="">
+                        <img src="../images/slaave.jpg" alt="">
                     </section>
                 </div>
             </header>
@@ -47,9 +47,9 @@
                     <h1>Keith Chan</h1>
                     <p style="color: rgba(0, 0, 0, 0.463);"><i>Founder</i></p>
                     <div class="socials-container" id="socials-container">
-                        <div id="instagram" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(1);" src="../images/instagram-icon.jpg" alt="" onclick="window.replace()"></div>
-                        <div id="linkedin" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(1);" src="../images/linkedin-icon.png" alt="" onclick="window.replace()"></div>
-                        <div id="twitter" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)"><img style="filter: invert(0); background-image: none; background-color: transparent;" src="../images/twitter-icon.png" alt="" onclick="window.replace()"></div>
+                        <div id="instagram" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)" onclick="location.href='https://www.instagram.com/hydrogenperoxideinme?igsh=NDlyaDI2NDdwMmVk&utm_source=qr'"><img style="filter: invert(1);" src="../images/instagram-icon.jpg" alt=""></div>
+                        <div id="linkedin" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)" onclick="location.href='https://www.linkedin.com/'"><img style="filter: invert(1);" src="../images/linkedin-icon.png" alt=""></div>
+                        <div id="twitter" onmouseover="socialStyles(event)" onmouseout="socialStyles(event)" onclick="location.href='https://twitter.com/'"><img style="filter: invert(0); background-image: none; background-color: transparent;" src="../images/twitter-icon.png" alt=""></div>
                     </div>
 
                 </section>
@@ -58,13 +58,13 @@
                         <h1>Introduction</h1>
                         <div class="intro-grid">
                             <article>
-                               <b>My name is keith</b>
+                               <b>Hi I'm Keith</b>
                                <br>
-                               You know whats the saddest thing? After all this, I still have no inkling of what to write
+                               a programmer at heart and an ever-curious problem solver. My journey into the world of code started with a simple curiosity: how do apps, games, and websites actually work? That question turned into a passion, and over the years, programming has become more than just a skill for me — it's a way of thinking, creating, and continuously learning.
                             </article>
                             <article>
                                 <br>
-                                Hi I'm Keith, I coded this website for 2 weeks straight, its alot of work and I'm just human so please forgive some buttons with missing functions. I'm really quiet because there is no living organism that I ought could understand my emotions and feelings like other people so desperately want for themselves
+                                I'm most at home when I'm building things — whether it's a sleek front-end interface, a complex algorithm, or a quirky side project just for fun. I enjoy working with languages like JavaScript and Python, and I'm always eager to explore new frameworks and tools that challenge how I think. Debugging might frustrate some, but for me, it's like solving a puzzle — every error is just a clue leading to a better solution.
                             </article>
                         </div>
                     </section>
@@ -155,16 +155,6 @@
             let userProfileButton = document.querySelector("#user-profile-icon")
             let maxWidth = navCont.offsetWidth;
             let minWidth = maxWidth - contextCont.offsetWidth;
-
-            // let objectChecker = {
-            //     "socials-container" : () => {
-            //         let social
-            //         if () {
-
-            //         }
-            //     },
-
-            // }
             let mainBody = document.querySelector(".main-body");
             let profileBanner = document.querySelector("#profile-banner")
             let profilePicture = document.querySelector("#profile-banner > section")
@@ -358,10 +348,10 @@
                 let textArea = document.querySelector("#textArea");
 
                 let yearToText = {
-                    "early-life" : `<h1>Early Life</h1><p>Ig I was born</p>`,
-                    "middle-school" : `<h1>Middle School</h1><p>Forced to move schools twice, parent's divorced</p>`,
-                    "highschool" : `<h1>High School</h1><p>Met this girl I really liked but I was too cowardly to talk to her, taking her presence for granted :'(</p>`,
-                    "college" : `<h1>College</h1><p>ngl couldn't feel any lonelier or sadder but I'd rather be up here high and dry; away from what lurked below</p>`
+                    "early-life" : `<h1>Early Life</h1><p>I was born :D</p>`,
+                    "middle-school" : `<h1>Middle School</h1><p>The difference between the me now and the me then was that I hadn't discovered any real hobbies that I would really sink as much time as i do now with programming, so I was rather active in sports such as swimming, running and just had alot of fun doing what I did with friends</p>`,
+                    "highschool" : `<h1>High School</h1><p>In HighSchool, I tried learning Java for the first time (when I was 13 to 14), but it was really confusing and I couldn't even understand the concepts of OOP let alone what Java was used for in real life, in the meantime, I learned alot about biology, chemistry and physics, which I had discovered I had an affinity for the explanations of how the things around me worked, this was also bolstered by my own teacher's attitudes with how they delivered their lessons to us, my favourite teachers were the kindest and who made the classroom feel like a place you could be comfortable to stay in, leading me to sharpen my maths and physics skill greatly over the next 4 years</p>`,
+                    "college" : `<h1>College</h1><p>In college, I was first introduced to an algorithm API called OpenCV, where I had a friend who made a traffic light recognition program, which had captivated me, It's been a long journey since then but I've now picked up python, javascript, html, css (from my assigments), I also dabbled in game engines which used languages like Lua, GDscript, and C#, from it I had learned that it's not about how good you are right now that makes you, but rather the aptitude to keep learning</p>`
                     
                 }
 

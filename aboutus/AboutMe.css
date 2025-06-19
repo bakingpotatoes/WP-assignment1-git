@@ -56,7 +56,7 @@ div.side-nav {
 
 .main-body {
     --profileBannerTop: 60vh;
-
+    container-type: size;
     display: flex;
     flex-wrap: wrap;
     position: absolute;
@@ -76,11 +76,13 @@ div.side-nav {
         background-color: rgb(181, 193, 204);
         height: 60%;
         width: 100%;
+        max-width: 100cqi;
 
         & > .photo-catalog {
             display: grid;
             grid-template-rows: 50% 50%;
             width: 100%;
+            max-width: 100%;
             height: 100%;
 
             & > section {
@@ -89,10 +91,13 @@ div.side-nav {
                 height: auto;
                 max-height: 100%;
                 max-width: 100%;
+                min-width: 100%;
             
                 & > img {
+                    width: 50%;
                     flex-grow: 1;
                     object-fit: cover;
+                    align-self: safe
                 }
             }
         }

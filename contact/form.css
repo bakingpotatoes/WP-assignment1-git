@@ -9,6 +9,7 @@ body {
 
 :root {
     --widthOfSideNav: 8vw; /*the start of the scrollbar is considered the end of the viewport, remove it to reveal 100vw for your workspace, keep it to have like <100vw for yourself*/
+    --widthOfNotification: 30cqi;
 }
 
 div.side-nav {
@@ -53,7 +54,7 @@ div.side-nav {
 }
 
 
-.main-body {
+.main-body { /*by design, all the overflow-y happens here*/
     display: flex;
     flex-wrap: wrap;
     position: absolute;
@@ -64,7 +65,213 @@ div.side-nav {
     justify-self: center;
     z-index: 0;
     overflow-x: auto; /* Checks safely and gently for overflow in the x-direction*/
+    container-type: size;
 
+    &::-webkit-scrollbar { 
+        display: none;
+    }
+
+    & > div.form { /*unfortunately children nodes don't have a real computed height (all fit-content)*/
+        box-sizing: border-box;
+        width: 100%;
+        overflow-y: auto; /*A quick fix to a problem where the parent container thinks there is no content in itself*/
+        justify-items: center;
+        container-type: size;
+        position: relative;
+
+        &::-webkit-scrollbar { 
+            display: none;
+        }
+
+        & > div#form-notification, & > div.form-notification-InOut {
+
+            position: fixed;
+            width: var(--widthOfNotification); /*Gets latest container cqi from div.form*/
+            min-width: 170px;
+            height: 100px;
+            top: 18vh;
+            padding: 10px;
+            right: calc(-1 * clamp(170px, var(--widthOfNotification), var(--widthOfNotification))); /* i suppose this works? it was easier for my brain to comprehend*/
+            box-sizing: border-box;
+
+            & > section {
+                background-color: rgb(0, 92, 17);
+                display: block;
+                pointer-events: none;
+                height: 100%;
+                border-radius: 20px;
+                text-align: center;
+                align-content: center;
+                font-size: 30px;
+                color: white;
+
+            }
+
+        }
+
+        /*Simply for animation switching*/
+        & > div.form-notification-InOut {
+            animation-name: formNotification-InOut;
+            animation-duration: 3000ms;
+            animation-fill-mode: both;
+        }
+
+
+        & > header { /*This child's height depends on its own children*/
+            box-sizing: border-box;
+            width: 100cqi;
+            height: fit-content;
+            display: flex;
+            padding: 0 10% 10% 10%;
+            justify-content: start;
+
+            & > div {
+                flex-basis: 60%;
+                height: 100%;
+
+                & > h1 {
+                    font-size: clamp(40px, 10vw, 60px);
+                    font-weight: bolder;
+                    
+                }
+
+                & > p {
+                    font-size: clamp(15px, 5vw, 20px);
+                }
+
+            }
+
+        }
+
+        & > form { /*NGL, idk why this child of the div.form isn't being recognised as its content*/
+            padding: 50px 30px 50px 30px;
+            background-color: rgb(244, 244, 244);
+            width: 50%;
+            border-radius: 20px;
+            display: grid;
+            grid-template-rows: auto;
+            box-sizing: border-box;
+            box-shadow: 2px 4px 5px 0 black, 4px 5px 7px 0 black;
+            margin-bottom: 40px;
+            min-width: 260px;
+
+            & > #submit-reset-container {
+                height: 10cqb;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                column-gap: 50px;
+
+                & button {
+                    flex-grow: 1;
+                    height: 50%;
+                    border-radius: 20px;
+                    border: 1px solid black;
+                    cursor: pointer;
+                    background-color: white;
+                    transition: background-color 200ms, flex-grow 200ms, font-size 200ms, font-weight 200ms;
+                    
+                    &:hover {
+                        background-color: aliceblue;
+                        flex-grow: 1.2;
+                        font-size: larger;
+                        font-weight: bolder;
+                    }
+
+                }
+
+            }
+
+            & > article.notes {
+                display: flex;
+                flex-wrap: wrap;
+                row-gap: 10px;
+
+                & > label {
+                    width: 100%;
+                    font-weight: bolder;
+                }
+
+                & > textarea {
+                    width: 100%;
+                    min-height: 100px;
+                    display: block;
+                    resize: vertical;
+                    font-size: larger;
+                    font-family: Arial, Helvetica, sans-serif;
+                    padding: 10px;
+                }
+
+            }
+
+            & > section {
+                display: grid;
+                height: min-content ;
+                grid-template-columns: 0.3fr 0.7fr;
+                align-items: center;
+                box-sizing: border-box;
+                padding: 30px 0 100px 0;
+                container-type: size;
+
+                & > div.gender-radios {
+                    display: grid;
+                    grid-template-columns: auto auto auto;
+                    justify-items: center;
+
+                    & > section {
+                        display: flex;
+                        width: min-content;
+                        border: 1px solid black;
+                        border-radius: 20px;
+                        align-items: center;
+
+                        & > * {
+                            padding: 0 2cqi 0 2cqi;
+                            font-weight: bolder;
+                            font-size: clamp(10px, 1vw, 15px);
+                        }
+                    }
+
+                }
+
+                & > label {
+                    width: 100%;
+                    font-size: clamp(10px, 3vw, 20px);
+                    box-sizing: border-box;
+                    padding-left: 15px;
+                }
+
+                & > input[type="number"]::-webkit-outer-spin-button, & > input[type="number"]::-webkit-inner-spin-button {
+                    margin: 0;
+                    appearance: none;
+                }
+
+                & > input[type="text"], & > select, & > input[type="number"] {
+                    height: 30px;
+                    justify-self: center;
+                    width: 80%;
+                    border-radius: 10px;
+                    border: 1px solid black;
+                }
+                
+                & > div.inputspace-override {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    & > input[type="checkbox"] {
+                        width: 20px;
+                        aspect-ratio: 1;
+                        border: none;
+                    }
+
+                    & > label {
+                        margin: 0 5% 0 5%;
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -118,7 +325,6 @@ div.side-nav {
             animation-duration: 400ms;
         }
 
-
     }
 }
 
@@ -141,4 +347,12 @@ div.side-nav {
 @keyframes reverse-fadetwo {
     from {opacity: 1; box-shadow: 0 5px 10px 0 rgba(0,0,0, 0.5);}
     to {opacity: 0.5;}
+}
+
+@keyframes formNotification-InOut {
+    0% {right: calc(-1 * clamp(170px, var(--widthOfNotification), var(--widthOfNotification)));} /*start off from whatever state it was in*/
+    10% {right: 0;} /*appear on screen for like a few seconds*/
+    80% {right: 0;} /*dissapear into the right side of screen*/
+    100% {right: calc(-1 * clamp(170px, var(--widthOfNotification), var(--widthOfNotification)));}
+    
 }
